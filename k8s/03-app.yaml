@@ -54,13 +54,18 @@ spec:
           resources:
             requests: {cpu: 50m, memory: 96Mi}
             limits: {cpu: 250m, memory: 256Mi}
+          # Recreate (above) means every rollout has a real gap between the old pod dying and
+          # the new one serving - confirmed live at ~15s, almost entirely initialDelaySeconds
+          # here rather than image pull or volume attach (both measured under 5s). This is a
+          # small ASP.NET Core app with no DB/migration work at startup, so it's actually ready
+          # well before 10s - tightened to shrink the user-visible 503 window on every deploy.
           readinessProbe:
             httpGet: {path: /health, port: 8080}
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 2
+            periodSeconds: 2
           livenessProbe:
             httpGet: {path: /health, port: 8080}
-            initialDelaySeconds: 15
+            initialDelaySeconds: 6
             periodSeconds: 10
           volumeMounts:
             - name: data
