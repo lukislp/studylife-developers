@@ -3,11 +3,9 @@
 # paired with). Bootstrap-only, NOT Flux-managed - kustomize-controller's ClusterRole has no
 # "networkpolicies" permission.
 #
-# NOTE: this only wires up server-to-server ingress (StudyLife calling /internal/register-key/
-# revoke-key). Browser access to the portal's own UI from outside the cluster (a public
-# subdomain + Gateway HTTPRoute + cert-manager, matching studylife-mcp's own pattern) is a
-# deliberate follow-up, not set up here - it needs an explicit domain-naming decision this
-# manifest shouldn't guess at.
+# Also wires up the shared NGF Gateway's ingress to the portal's own UI (see
+# k8s/06-httproute.yaml) - allow-nginx-gateway-to-app below, same pattern as studylife-web's own
+# allow-nginx-gateway-to-web in the studylife repo's k8s/12-network-policies.yaml.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -49,5 +47,19 @@ spec:
     - from:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: studylife-scale } }
           podSelector: { matchLabels: { app: studylife-web } }
+      ports:
+        - { protocol: TCP, port: 8080 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nginx-gateway-to-app
+  namespace: studylife-developers
+spec:
+  podSelector: { matchLabels: { app: studylife-developers } }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: nginx-gateway } }
       ports:
         - { protocol: TCP, port: 8080 }
