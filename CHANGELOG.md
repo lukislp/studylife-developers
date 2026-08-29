@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/lukislp/studylife-developers/compare/v1.2.4...v1.2.5) (2026-08-29)
+
+
+### Bug Fixes
+
+* modal body wasn't actually scrollable (flex child needed min-height:0) ([a4ff9a6](https://github.com/lukislp/studylife-developers/commit/a4ff9a6406ea735f0774acacd0da27a856c34c40))
+
 ## [1.2.4](https://github.com/lukislp/studylife-developers/compare/v1.2.3...v1.2.4) (2026-08-29)
 
 
