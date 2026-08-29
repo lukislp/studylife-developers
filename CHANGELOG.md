@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/lukislp/studylife-developers/compare/v1.2.2...v1.2.3) (2026-08-29)
+
+
+### Bug Fixes
+
+* build with a single-step restore+publish instead of the split-layer pattern ([11d46ba](https://github.com/lukislp/studylife-developers/commit/11d46ba8b7a0a321abc12578c38ec5ae5931cab6))
+
 ## [1.2.2](https://github.com/lukislp/studylife-developers/compare/v1.2.1...v1.2.2) (2026-08-29)
 
 
