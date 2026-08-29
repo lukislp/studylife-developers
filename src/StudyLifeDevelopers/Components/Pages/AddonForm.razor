@@ -1,0 +1,144 @@
+@page "/addons/new"
+@page "/addons/{ClientId}/edit"
+@rendermode InteractiveServer
+@inject StudyLifeApiClient Api
+@inject NavigationManager Nav
+
+<div class="setup-page">
+    <div class="setup-section">
+        <a href="/" class="ss-desc">&larr; Back to your add-ons</a>
+        <div class="ss-label" style="margin-top:0.75rem">@(IsNew ? "Register a new add-on" : $"Edit {_editing?.Name}")</div>
+
+        @if (_notFound)
+        {
+            <p class="ss-desc">@(_error ?? "This add-on no longer exists.")</p>
+        }
+        else if (_loading)
+        {
+            <p class="ss-desc">Loading…</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <p class="ss-desc" style="color:var(--danger, #e5484d)">@_error</p>
+            }
+
+            @if (IsNew)
+            {
+                <label class="ss-desc">Client ID (lowercase, hyphens, permanent)</label>
+                <input class="input" @bind="_clientIdForCreate" placeholder="my-addon" />
+            }
+            <label class="ss-desc">Name</label>
+            <input class="input" @bind="_form.Name" placeholder="My Add-on" />
+            <label class="ss-desc">Description</label>
+            <input class="input" @bind="_form.Description" placeholder="One sentence describing what it does." />
+            <label class="ss-desc">Redirect URIs (one per line)</label>
+            <textarea class="input" rows="2" @bind="_redirectUrisText" placeholder="https://your-addon.example.com/callback"></textarea>
+            <label class="ss-desc">Scopes</label>
+            <div style="display:flex;flex-direction:column;gap:4px">
+                @foreach (var scope in ScopeCatalog.All)
+                {
+                    <label style="display:flex;align-items:flex-start;gap:6px;font-size:0.85rem">
+                        <input type="checkbox" style="margin-top:3px;flex-shrink:0" checked="@_form.RequestedScopes.Contains(scope.Id)"
+                               @onchange="e => ToggleScope(scope.Id, (bool)e.Value!)" />
+                        <span>@scope.Label <span class="ss-desc" style="font-family:monospace;font-size:0.75rem">(@scope.Id)</span></span>
+                    </label>
+                }
+            </div>
+
+            <div class="toggle-row" style="gap:0.5rem;margin-top:1rem">
+                <button type="button" class="btn-secondary" @onclick="Cancel" disabled="@_busy">Cancel</button>
+                <button type="button" class="btn-secondary" @onclick="SaveAsync" disabled="@_busy">
+                    @(_busy ? "…" : (IsNew ? "Register" : "Save"))
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? ClientId { get; set; }
+
+    private bool IsNew => ClientId is null;
+
+    private DeveloperClientDto? _editing;
+    private UpdateDeveloperClientRequestDto _form = new();
+    private string _clientIdForCreate = "";
+    private string _redirectUrisText = "";
+    private bool _loading = true;
+    private bool _busy;
+    private bool _notFound;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Api.Connected) { Nav.NavigateTo("/"); return; }
+
+        if (!IsNew)
+        {
+            List<DeveloperClientDto> clients;
+            try { clients = await Api.GetClientsAsync(); }
+            catch (Exception ex) { _error = $"Couldn't reach StudyLife: {ex.Message}"; _notFound = true; _loading = false; return; }
+
+            _editing = clients.FirstOrDefault(c => c.ClientId == ClientId);
+            if (_editing is null) { _notFound = true; _loading = false; return; }
+
+            _form = new UpdateDeveloperClientRequestDto
+            {
+                Name = _editing.Name,
+                Description = _editing.Description,
+                AllowedRedirectUris = new List<string>(_editing.AllowedRedirectUris),
+                RequestedScopes = new List<string>(_editing.RequestedScopes),
+            };
+            _redirectUrisText = string.Join('\n', _editing.AllowedRedirectUris);
+        }
+
+        _loading = false;
+    }
+
+    private void ToggleScope(string scopeId, bool isChecked)
+    {
+        if (isChecked) { if (!_form.RequestedScopes.Contains(scopeId)) _form.RequestedScopes.Add(scopeId); }
+        else _form.RequestedScopes.Remove(scopeId);
+    }
+
+    private void Cancel() => Nav.NavigateTo("/");
+
+    private async Task SaveAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            _form.AllowedRedirectUris = _redirectUrisText
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+
+            if (IsNew)
+            {
+                var (success, error, _) = await Api.CreateClientAsync(new CreateDeveloperClientRequestDto
+                {
+                    ClientId = _clientIdForCreate,
+                    Name = _form.Name,
+                    Description = _form.Description,
+                    AllowedRedirectUris = _form.AllowedRedirectUris,
+                    RequestedScopes = _form.RequestedScopes,
+                });
+                if (!success) { _error = error; return; }
+            }
+            else
+            {
+                var (success, error, _) = await Api.UpdateClientAsync(ClientId!, _form);
+                if (!success) { _error = error; return; }
+            }
+
+            Nav.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            _error = $"Couldn't reach StudyLife: {ex.Message}";
+        }
+        finally { _busy = false; }
+    }
+}
