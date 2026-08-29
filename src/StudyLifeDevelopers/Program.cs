@@ -22,7 +22,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
-app.UseStaticFiles();
+app.MapStaticAssets();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
