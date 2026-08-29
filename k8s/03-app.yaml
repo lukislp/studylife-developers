@@ -42,7 +42,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: studylife-developers
-          image: ghcr.io/lukislp/studylife-developers:1.2.4 # {"$imagepolicy": "flux-system:studylife-developers"}
+          image: ghcr.io/lukislp/studylife-developers:1.2.5 # {"$imagepolicy": "flux-system:studylife-developers"}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities: {drop: ["ALL"]}
