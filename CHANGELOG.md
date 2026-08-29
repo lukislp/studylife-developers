@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/lukislp/studylife-developers/compare/v1.1.1...v1.2.0) (2026-08-29)
+
+
+### Features
+
+* add HTTPRoute for browser access to the portal UI ([1e31ba6](https://github.com/lukislp/studylife-developers/commit/1e31ba663badfb43ef5ca8cdcf2e7dd210ef60c6)), closes [#22](https://github.com/lukislp/studylife-developers/issues/22)
+
 ## [1.1.1](https://github.com/lukislp/studylife-developers/compare/v1.1.0...v1.1.1) (2026-08-29)
 
 
