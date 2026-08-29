@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/lukislp/studylife-developers/compare/v1.3.0...v1.3.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* tighten readiness probe timing to shrink the deploy downtime window ([0f6f955](https://github.com/lukislp/studylife-developers/commit/0f6f95564af932f18eb99824ac644772c416446c))
+
 # [1.3.0](https://github.com/lukislp/studylife-developers/compare/v1.2.5...v1.3.0) (2026-08-29)
 
 
