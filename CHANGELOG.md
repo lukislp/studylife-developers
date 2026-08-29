@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/lukislp/studylife-developers/compare/v1.2.0...v1.2.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* allow the shared NGF Gateway to reach the app pod (502 fix) ([8da12d6](https://github.com/lukislp/studylife-developers/commit/8da12d6ff4887b1c9cd92e22496977306dd6ee1b))
+
 # [1.2.0](https://github.com/lukislp/studylife-developers/compare/v1.1.1...v1.2.0) (2026-08-29)
 
 
