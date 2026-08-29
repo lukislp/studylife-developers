@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/lukislp/studylife-developers/compare/v1.2.1...v1.2.2) (2026-08-29)
+
+
+### Bug Fixes
+
+* serve blazor.web.js by mapping static assets instead of UseStaticFiles ([2eed448](https://github.com/lukislp/studylife-developers/commit/2eed448f23a20964cb5d7004ab58069c3ccc8ec7))
+
 ## [1.2.1](https://github.com/lukislp/studylife-developers/compare/v1.2.0...v1.2.1) (2026-08-29)
 
 
