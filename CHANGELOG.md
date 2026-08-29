@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/lukislp/studylife-developers/compare/v1.1.0...v1.1.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* publish multi-arch amd64/arm64 images so the app can run on arm64 cluster nodes ([d4bb07f](https://github.com/lukislp/studylife-developers/commit/d4bb07f600ff9311ef8fe4c5659f96baa559cd88))
+
 # [1.1.0](https://github.com/lukislp/studylife-developers/compare/v1.0.0...v1.1.0) (2026-08-29)
 
 
