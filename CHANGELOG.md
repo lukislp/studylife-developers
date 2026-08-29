@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/lukislp/studylife-developers/compare/v1.2.5...v1.3.0) (2026-08-29)
+
+
+### Features
+
+* replace the add-on modal with a full page ([a598afd](https://github.com/lukislp/studylife-developers/commit/a598afd3a80108bf00d546340316b682b7f885f5))
+
 ## [1.2.5](https://github.com/lukislp/studylife-developers/compare/v1.2.4...v1.2.5) (2026-08-29)
 
 
