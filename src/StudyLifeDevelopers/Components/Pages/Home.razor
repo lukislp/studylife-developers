@@ -70,7 +70,7 @@
                 <h3>@(_isNew ? "Register a new add-on" : $"Edit {_editing.Name}")</h3>
                 <button type="button" class="modal-close" @onclick="CancelEdit">✕</button>
             </div>
-            <div class="modal-body" style="overflow-y:auto;flex:1 1 auto">
+            <div class="modal-body" style="overflow-y:auto;flex:1 1 auto;min-height:0">
                 @if (!string.IsNullOrEmpty(_error))
                 {
                     <p class="ss-desc" style="color:var(--danger, #e5484d)">@_error</p>
