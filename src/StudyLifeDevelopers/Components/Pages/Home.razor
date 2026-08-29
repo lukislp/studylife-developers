@@ -1,0 +1,241 @@
+@page "/"
+@rendermode InteractiveServer
+@inject StudyLifeApiClient Api
+
+<div class="setup-page">
+
+    @if (!Api.Connected)
+    {
+        <div class="setup-section">
+            <div class="ss-label">Not connected</div>
+            <p class="ss-desc">
+                This portal isn't paired with a StudyLife account yet. Open your StudyLife
+                instance's Setup page and enable the "studylife-developers connection" card -
+                once you do, this page reloads automatically and you can start registering
+                add-ons.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="setup-section">
+            <div class="ss-label">Your add-ons</div>
+            <p class="ss-desc">
+                Add-ons registered here can be installed by any user of the paired StudyLife
+                instance via the generic connect flow. Once you're happy with an add-on, submit
+                it to
+                <a href="https://github.com/lukislp/studylife-marketplace" target="_blank" rel="noopener">studylife-marketplace</a>
+                to list it publicly.
+            </p>
+
+            @if (_loading)
+            {
+                <p class="ss-desc">Loading…</p>
+            }
+            else if (_clients.Count == 0)
+            {
+                <p class="ss-desc">No add-ons registered yet.</p>
+            }
+            else
+            {
+                @foreach (var client in _clients)
+                {
+                    <div class="field-row" style="flex-wrap:wrap;align-items:flex-start;border-bottom:1px solid var(--border);padding-bottom:0.75rem;margin-bottom:0.75rem">
+                        <div style="flex:1;min-width:240px">
+                            <strong>@client.Name</strong>
+                            <div class="ss-desc" style="margin:2px 0 0">@client.Description</div>
+                            <div class="ss-desc" style="margin:4px 0 0;font-family:monospace;font-size:0.8rem">clientId: @client.ClientId</div>
+                            <div class="ss-desc" style="margin:2px 0 0;font-size:0.8rem">Scopes: @string.Join(", ", client.RequestedScopes)</div>
+                        </div>
+                        <div class="toggle-row" style="gap:0.5rem;flex-shrink:0">
+                            <button type="button" class="btn-secondary" @onclick="() => OpenEdit(client)">Edit</button>
+                            <button type="button" class="btn-danger" @onclick="() => _confirmingDeleteClientId = client.ClientId">Delete</button>
+                        </div>
+                    </div>
+                }
+            }
+
+            <button type="button" class="btn-secondary" @onclick="OpenCreate" disabled="@_busy">
+                Register new add-on
+            </button>
+        </div>
+    }
+</div>
+
+@if (_editing is not null)
+{
+    <div class="modal-overlay" @onclick="CancelEdit">
+        <div class="modal" @onclick:stopPropagation="true" style="max-width:520px">
+            <div class="modal-header">
+                <h3>@(_isNew ? "Register a new add-on" : $"Edit {_editing.Name}")</h3>
+                <button type="button" class="modal-close" @onclick="CancelEdit">✕</button>
+            </div>
+            <div class="modal-body">
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <p class="ss-desc" style="color:var(--danger, #e5484d)">@_error</p>
+                }
+                @if (_isNew)
+                {
+                    <label class="ss-desc">Client ID (lowercase, hyphens, permanent)</label>
+                    <input class="input" @bind="_clientIdForCreate" placeholder="my-addon" />
+                }
+                <label class="ss-desc">Name</label>
+                <input class="input" @bind="_form.Name" placeholder="My Add-on" />
+                <label class="ss-desc">Description</label>
+                <input class="input" @bind="_form.Description" placeholder="One sentence describing what it does." />
+                <label class="ss-desc">Redirect URIs (one per line)</label>
+                <textarea class="input" rows="2" @bind="_redirectUrisText" placeholder="https://your-addon.example.com/callback"></textarea>
+                <label class="ss-desc">Scopes</label>
+                <div style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto">
+                    @foreach (var scope in ScopeCatalog.All)
+                    {
+                        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem">
+                            <input type="checkbox" checked="@_form.RequestedScopes.Contains(scope.Id)"
+                                   @onchange="e => ToggleScope(scope.Id, (bool)e.Value!)" />
+                            <span>@scope.Label</span>
+                            <span class="ss-desc" style="font-family:monospace;font-size:0.75rem">(@scope.Id)</span>
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" @onclick="CancelEdit" disabled="@_busy">Cancel</button>
+                <button type="button" class="btn-secondary" @onclick="SaveAsync" disabled="@_busy">
+                    @(_busy ? "…" : (_isNew ? "Register" : "Save"))
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_confirmingDeleteClientId is { } deleteId)
+{
+    <div class="modal-overlay" @onclick="() => _confirmingDeleteClientId = null">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Delete this add-on?</h3>
+                <button type="button" class="modal-close" @onclick="() => _confirmingDeleteClientId = null">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>⚠️ Users who already installed it keep their existing access - this only removes it from the registry, no already-issued key is revoked.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" @onclick="() => _confirmingDeleteClientId = null" disabled="@_busy">Cancel</button>
+                <button type="button" class="btn-danger" @onclick="() => DeleteAsync(deleteId)" disabled="@_busy">
+                    @(_busy ? "…" : "Yes, delete")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<DeveloperClientDto> _clients = new();
+    private bool _loading = true;
+    private bool _busy;
+    private string? _error;
+    private bool _isNew;
+    private DeveloperClientDto? _editing;
+    private UpdateDeveloperClientRequestDto _form = new();
+    private string _clientIdForCreate = "";
+    private string _redirectUrisText = "";
+    private string? _confirmingDeleteClientId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Api.Connected) { _loading = false; return; }
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        try { _clients = await Api.GetClientsAsync(); }
+        catch { _clients = new(); }
+        _loading = false;
+    }
+
+    private void OpenCreate()
+    {
+        _isNew = true;
+        _editing = new DeveloperClientDto();
+        _form = new UpdateDeveloperClientRequestDto();
+        _clientIdForCreate = "";
+        _redirectUrisText = "";
+        _error = null;
+    }
+
+    private void OpenEdit(DeveloperClientDto client)
+    {
+        _isNew = false;
+        _editing = client;
+        _form = new UpdateDeveloperClientRequestDto
+        {
+            Name = client.Name,
+            Description = client.Description,
+            AllowedRedirectUris = new List<string>(client.AllowedRedirectUris),
+            RequestedScopes = new List<string>(client.RequestedScopes),
+        };
+        _redirectUrisText = string.Join('\n', client.AllowedRedirectUris);
+        _error = null;
+    }
+
+    private void CancelEdit()
+    {
+        _editing = null;
+        _error = null;
+    }
+
+    private void ToggleScope(string scopeId, bool isChecked)
+    {
+        if (isChecked) { if (!_form.RequestedScopes.Contains(scopeId)) _form.RequestedScopes.Add(scopeId); }
+        else _form.RequestedScopes.Remove(scopeId);
+    }
+
+    private async Task SaveAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            _form.AllowedRedirectUris = _redirectUrisText
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+
+            if (_isNew)
+            {
+                var (success, error, _) = await Api.CreateClientAsync(new CreateDeveloperClientRequestDto
+                {
+                    ClientId = _clientIdForCreate,
+                    Name = _form.Name,
+                    Description = _form.Description,
+                    AllowedRedirectUris = _form.AllowedRedirectUris,
+                    RequestedScopes = _form.RequestedScopes,
+                });
+                if (!success) { _error = error; return; }
+            }
+            else
+            {
+                var (success, error, _) = await Api.UpdateClientAsync(_editing!.ClientId, _form);
+                if (!success) { _error = error; return; }
+            }
+
+            _editing = null;
+            await ReloadAsync();
+        }
+        finally { _busy = false; }
+    }
+
+    private async Task DeleteAsync(string clientId)
+    {
+        _busy = true;
+        try
+        {
+            await Api.DeleteClientAsync(clientId);
+            _confirmingDeleteClientId = null;
+            await ReloadAsync();
+        }
+        finally { _busy = false; }
+    }
+}

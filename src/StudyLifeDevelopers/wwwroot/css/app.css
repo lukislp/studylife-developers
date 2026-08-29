@@ -1,0 +1,13 @@
+/* Small additions on top of the copied StudyLife stylesheets (base.css/shared.css/setup.css) -
+   this portal only ever renders one simplified layout (a static-status sidebar + a single
+   setup-page-style content column), so nothing page-specific from the main app (dashboard.css,
+   calendar.css, etc.) was copied here. */
+
+.sidebar .nav-item[style*="cursor:default"]:hover {
+    background: transparent;
+}
+
+textarea.input {
+    font-family: inherit;
+    resize: vertical;
+}

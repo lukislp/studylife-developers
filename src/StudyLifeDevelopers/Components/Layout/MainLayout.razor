@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+@inject StudyLifeApiClient Api
+
+<div class="app-shell">
+    <nav class="sidebar">
+        <div class="brand">
+            <span class="brand-icon">✦</span>
+            <span class="brand-name">Developers</span>
+        </div>
+        <div class="nav-links">
+            <span class="nav-item" style="cursor:default">
+                <span class="nav-icon">@(Api.Connected ? "●" : "○")</span>
+                <span class="nav-label">@(Api.Connected ? "Connected" : "Not connected")</span>
+            </span>
+        </div>
+    </nav>
+    <main class="main-content">
+        @Body
+    </main>
+</div>
