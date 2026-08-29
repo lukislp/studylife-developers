@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/lukislp/studylife-developers/compare/v1.2.3...v1.2.4) (2026-08-29)
+
+
+### Bug Fixes
+
+* add favicon, cap the add-on modal height, fix scope checkbox alignment ([e68ac58](https://github.com/lukislp/studylife-developers/commit/e68ac582ff25234d3902ebef70f0f600f25a391f))
+
 ## [1.2.3](https://github.com/lukislp/studylife-developers/compare/v1.2.2...v1.2.3) (2026-08-29)
 
 
