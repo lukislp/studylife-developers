@@ -1,0 +1,65 @@
+# HTTPRoute for the NGF gateway (homelab-infra's cluster/02-gateway.yaml, which now has the
+# matching studylife-developers-heim/-public listener pair). Both hostnames below are
+# internal-only, same trust level as every other service on this shared Gateway - see
+# studylife-web's own route (studylife repo's k8s/07d-httproutes.yaml) as the canonical example:
+# heim.lan is LAN-only DNS; the lukas2311-homelab.com one is NOT public internet exposure -
+# it's only a vehicle for a trusted (Cloudflare-issued) certificate on traffic NGINX Proxy
+# Manager terminates and forwards inside the network, never port-forwarded out.
+#
+# Deliberately NO BackendTLSPolicy, unlike studylife-web/uptime-kuma/grafana's HTTPRoutes: this
+# app's own HTTP transport (ASPNETCORE_HTTP_PORTS=8080, see Program.cs) only ever speaks plain
+# HTTP - it does not terminate TLS itself.
+#
+# NOTE: the Blazor UI behind this route has no login screen of its own (single-tenant portal,
+# paired to exactly one studylife instance - see docs/decisions equivalent reasoning in the
+# repo). That's an acceptable risk on this internal-only Gateway (same trust boundary as
+# grafana/uptime-kuma), not a gap specific to this route, but flagged here in case that
+# assumption ever changes (e.g. this Gateway becoming reachable from a less trusted network).
+#
+# Requires a DNS entry for studylife-developers.heim.lan pointing at the Gateway's MetalLB IP,
+# plus an NGINX Proxy Manager proxy host forwarding studylife-developers.lukas2311-homelab.com
+# to that same hostname (SNI stays heim.lan, the public Host header passes through) - both
+# separate, manual steps outside this repo/the studylife repo's k8s/, same as every other
+# service on this Gateway.
+#
+# Bootstrap-only, NOT Flux-managed - kustomize-controller's ClusterRole has no permission on the
+# gateway.networking.k8s.io/gateway.nginx.org API groups at all (same reasoning as
+# k8s/00-namespace.yaml/k8s/02-secret.yaml/k8s/04-network-policies.yaml).
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: studylife-developers
+  namespace: studylife-developers
+spec:
+  parentRefs:
+    - name: studylife-gateway
+      namespace: nginx-gateway
+  hostnames:
+    - studylife-developers.heim.lan
+    - studylife-developers.lukas2311-homelab.com
+  rules:
+    - backendRefs:
+        - name: studylife-developers
+          port: 8080
+---
+# Same modest rate limit as studylife-web's own HTTPRoute (studylife repo's
+# k8s/07d-httproutes.yaml) - personal-scale traffic, no reason to diverge.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: RateLimitPolicy
+metadata:
+  name: studylife-developers-rate-limit
+  namespace: studylife-developers
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: studylife-developers
+  rateLimit:
+    local:
+      rules:
+        - zoneSize: 10m
+          key: "$binary_remote_addr"
+          rate: 20r/s
+          burst: 200
+          noDelay: true
+    rejectCode: 503
