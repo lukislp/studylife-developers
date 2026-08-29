@@ -1,9 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY src/StudyLifeDevelopers/StudyLifeDevelopers.csproj src/StudyLifeDevelopers/
-RUN dotnet restore src/StudyLifeDevelopers/StudyLifeDevelopers.csproj
+# Deliberately NOT the usual "COPY *.csproj, restore, COPY rest, publish --no-restore" layer-
+# cache split: confirmed live that it makes dotnet publish silently drop blazor.web.js from the
+# generated static web assets manifest on Linux (restoring against a bare .csproj before the
+# Razor components/wwwroot exist produces a stale static-assets discovery cache that --no-restore
+# then never refreshes) - every request for it 404'd, breaking all interactivity. A single-step
+# restore+publish against the full source is what's actually verified to work; the build is cheap
+# enough here that the extra minute from the lost cache layer doesn't matter.
 COPY src/StudyLifeDevelopers/ src/StudyLifeDevelopers/
-RUN dotnet publish src/StudyLifeDevelopers/StudyLifeDevelopers.csproj -c Release -o /app --no-restore
+RUN dotnet publish src/StudyLifeDevelopers/StudyLifeDevelopers.csproj -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
