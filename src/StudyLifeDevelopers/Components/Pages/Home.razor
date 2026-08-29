@@ -65,12 +65,12 @@
 @if (_editing is not null)
 {
     <div class="modal-overlay" @onclick="CancelEdit">
-        <div class="modal" @onclick:stopPropagation="true" style="max-width:520px">
+        <div class="modal" @onclick:stopPropagation="true" style="max-width:520px;max-height:85vh;display:flex;flex-direction:column">
             <div class="modal-header">
                 <h3>@(_isNew ? "Register a new add-on" : $"Edit {_editing.Name}")</h3>
                 <button type="button" class="modal-close" @onclick="CancelEdit">✕</button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-y:auto;flex:1 1 auto">
                 @if (!string.IsNullOrEmpty(_error))
                 {
                     <p class="ss-desc" style="color:var(--danger, #e5484d)">@_error</p>
@@ -90,11 +90,10 @@
                 <div style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto">
                     @foreach (var scope in ScopeCatalog.All)
                     {
-                        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem">
-                            <input type="checkbox" checked="@_form.RequestedScopes.Contains(scope.Id)"
+                        <label style="display:flex;align-items:flex-start;gap:6px;font-size:0.85rem">
+                            <input type="checkbox" style="margin-top:3px;flex-shrink:0" checked="@_form.RequestedScopes.Contains(scope.Id)"
                                    @onchange="e => ToggleScope(scope.Id, (bool)e.Value!)" />
-                            <span>@scope.Label</span>
-                            <span class="ss-desc" style="font-family:monospace;font-size:0.75rem">(@scope.Id)</span>
+                            <span>@scope.Label <span class="ss-desc" style="font-family:monospace;font-size:0.75rem">(@scope.Id)</span></span>
                         </label>
                     }
                 </div>
