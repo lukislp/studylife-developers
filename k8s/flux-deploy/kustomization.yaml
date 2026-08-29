@@ -1,0 +1,8 @@
+# Deliberately ONLY these files - NOT the rest of k8s/, which contains placeholders (namespace,
+# secret, network policies - see docs/decisions equivalent reasoning in studylife-webhooks).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../01-config.yaml
+  - ../03-app.yaml
+  - ../05-studylife-ca.yaml

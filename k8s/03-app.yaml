@@ -1,0 +1,88 @@
+# The service itself. Image tag is a placeholder ("0.1.0") overwritten by Flux's
+# ImageUpdateAutomation the moment it first reconciles against a real published tag - mirrors
+# studylife-webhooks' own k8s/03-app.yaml. This repo's Dockerfile reuses the aspnet base
+# image's own "app" user (uid 1654, matching studylife's own k8s securityContext.runAsUser) -
+# runAsNonRoot/runAsUser is safe here without live inspection, since it's this repo's own
+# Dockerfile, not an opaque third-party image.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: studylife-developers-data
+  namespace: studylife-developers
+spec:
+  accessModes: ["ReadWriteOnce"]
+  # Longhorn (cross-node-replicated) instead of local-path - the single-file key store
+  # (KeyStore) survives a node dying instead of needing a Velero restore.
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 64Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studylife-developers
+  namespace: studylife-developers
+spec:
+  replicas: 1
+  strategy:
+    # Single instance with an RWO volume (KeyStore is a plain JSON file, not built for
+    # concurrent writers) - same reasoning as studylife-ai/studylife-webhooks.
+    type: Recreate
+  selector:
+    matchLabels: {app: studylife-developers}
+  template:
+    metadata:
+      labels: {app: studylife-developers}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+        fsGroup: 1654
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: studylife-developers
+          image: ghcr.io/lukislp/studylife-developers:0.1.0 # {"$imagepolicy": "flux-system:studylife-developers"}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          envFrom:
+            - configMapRef: {name: studylife-developers-config}
+            - secretRef: {name: studylife-developers-secrets}
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: {cpu: 50m, memory: 96Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: 8080}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 8080}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: studylife-ca
+              mountPath: /etc/studylife-ca
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: studylife-developers-data}
+        - name: studylife-ca
+          configMap: {name: studylife-internal-ca}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: studylife-developers
+  namespace: studylife-developers
+spec:
+  type: ClusterIP
+  selector: {app: studylife-developers}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

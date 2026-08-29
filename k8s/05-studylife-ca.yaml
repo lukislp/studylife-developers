@@ -1,0 +1,27 @@
+# The public root certificate of StudyLife's own cluster-internal cert-manager CA
+# (studylife-internal-ca-issuer, secret cert-manager/studylife-internal-ca in the studylife
+# repo's k8s/07b-cert-manager-issuers.yaml) - NOT the private key, which never leaves that
+# secret. Public certificate data, safe to commit: knowing it only lets a client verify certs
+# signed by this CA, it grants no ability to issue new ones. Identical content to
+# studylife-ai's own k8s/06-studylife-ca.yaml and studylife-mcp's own k8s/03-studylife-ca.yaml -
+# a ConfigMap is namespace-scoped, so this is a deliberate duplicate, not a divergence.
+# Flux-managed (see k8s/flux-deploy/kustomization.yaml) - unlike Secrets this resource kind IS
+# within kustomize-controller's granted RBAC.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: studylife-internal-ca
+  namespace: studylife-developers
+data:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIBhDCCASqgAwIBAgIUSS8ItxFLIFDQryS6aizQInDQIpgwCgYIKoZIzj0EAwIw
+    IDEeMBwGA1UEAxMVc3R1ZHlsaWZlLWludGVybmFsLWNhMB4XDTI2MDcxNzIxMTQz
+    N1oXDTM2MDcxNDIxMTQzN1owIDEeMBwGA1UEAxMVc3R1ZHlsaWZlLWludGVybmFs
+    LWNhMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEGScdaQokz65c9RcGJw6by3HJ
+    3GfPstwoQLchCXci7my6PZj1oQaC6vqalB0fDjQJfOfaHUEe/GTzkkejUvL/aaNC
+    MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFDCE
+    p6AmLQqDamt1+ECbfyQkLHrOMAoGCCqGSM49BAMCA0gAMEUCIGA+niHnQ3kX6aLP
+    FpD248LqZ3dsZj7n5UYDYnjJ+U+BAiEA5sD+ARZDEWOwVYXasmpLp4aq8T+tFIo0
+    +I59FdR3FDk=
+    -----END CERTIFICATE-----

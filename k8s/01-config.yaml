@@ -1,0 +1,24 @@
+# Non-secret runtime configuration. Flux-managed (see k8s/flux-deploy/kustomization.yaml) -
+# kustomize-controller's ClusterRole grants it "configmaps" but deliberately NOT "secrets" -
+# see k8s/02-secret.yaml for why that one stays bootstrap-only.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: studylife-developers-config
+  namespace: studylife-developers
+data:
+  # Cluster-internal Service DNS for the paired studylife instance - this portal is
+  # single-tenant, paired to exactly this one instance (see KeyStore's own doc comment). HTTPS
+  # on the internal Service port, not the http one - StudyLife's own UseHttpsRedirection
+  # middleware forces HTTPS unconditionally for every non-kube-probe request (found live by
+  # studylife-ai/-mcp already, see their own k8s/*-studylife-ca.yaml) - a plain port-8080 rule
+  # here would just get redirected to :8443, not actually reachable. StudyLife__CaCertPath
+  # points at the mounted CA cert (k8s/05-studylife-ca.yaml) needed to trust that connection -
+  # StudyLife's internal cert-manager CA isn't in any public trust store (see
+  # Services/StudyLifeCaTrust.cs).
+  StudyLife__BaseUrl: "https://studylife-web.studylife-scale.svc.cluster.local"
+  StudyLife__CaCertPath: "/etc/studylife-ca/ca.crt"
+  # KeyStore's single-file JSON store - must point inside the mounted PVC (k8s/03-app.yaml),
+  # the default "data" (config.py-equivalent default) would otherwise land in the container's
+  # ephemeral filesystem root and be lost on every restart.
+  DataDir: "/app/data"

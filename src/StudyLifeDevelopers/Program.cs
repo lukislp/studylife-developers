@@ -11,7 +11,8 @@ builder.Services.AddHttpClient<StudyLifeApiClient>((sp, http) =>
 {
     var baseUrl = sp.GetRequiredService<IConfiguration>()["StudyLife:BaseUrl"];
     if (!string.IsNullOrEmpty(baseUrl)) http.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-});
+})
+.ConfigurePrimaryHttpMessageHandler(sp => StudyLifeCaTrust.CreateHandler(sp.GetRequiredService<IConfiguration>()));
 
 var app = builder.Build();
 

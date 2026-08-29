@@ -1,0 +1,53 @@
+# Same strategy as studylife-webhooks' own k8s/04-network-policies.yaml: default-deny ingress
+# as a baseline, egress stays open (this portal calls out to whichever StudyLife instance it's
+# paired with). Bootstrap-only, NOT Flux-managed - kustomize-controller's ClusterRole has no
+# "networkpolicies" permission.
+#
+# NOTE: this only wires up server-to-server ingress (StudyLife calling /internal/register-key/
+# revoke-key). Browser access to the portal's own UI from outside the cluster (a public
+# subdomain + Gateway HTTPRoute + cert-manager, matching studylife-mcp's own pattern) is a
+# deliberate follow-up, not set up here - it needs an explicit domain-naming decision this
+# manifest shouldn't guess at.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: studylife-developers
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: studylife-developers
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: kube-system } }
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+    - {} # egress otherwise unrestricted - this policy only adds an explicit DNS allowance
+---
+# studylife-scale has no default-deny egress, so studylife-web can already reach out
+# cross-namespace by default - this rule is the only side that needs to explicitly allow
+# anything, admitting exactly the studylife-web pod's calls to /internal/register-key/
+# revoke-key (DeveloperProxyClient).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-studylife-web-to-app
+  namespace: studylife-developers
+spec:
+  podSelector: { matchLabels: { app: studylife-developers } }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: studylife-scale } }
+          podSelector: { matchLabels: { app: studylife-web } }
+      ports:
+        - { protocol: TCP, port: 8080 }
