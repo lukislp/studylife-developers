@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/lukislp/studylife-developers/compare/v1.3.1...v1.4.0) (2026-08-31)
+
+
+### Features
+
+* add Metrics.GetSummary to the publicly-grantable scope catalog ([a0d728d](https://github.com/lukislp/studylife-developers/commit/a0d728ddafce1c906ae70acfb426992ca5f5d2c1)), closes [studylife#114](https://github.com/studylife/issues/114)
+
 ## [1.3.1](https://github.com/lukislp/studylife-developers/compare/v1.3.0...v1.3.1) (2026-08-29)
 
 
