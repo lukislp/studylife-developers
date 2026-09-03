@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/lukislp/studylife-developers/compare/v1.4.0...v1.4.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **ci:** add Dependabot for github-actions, nuget, docker ([0e13a24](https://github.com/lukislp/studylife-developers/commit/0e13a247d02948104aedc5daca35186fe5d75a92))
+
 # [1.4.0](https://github.com/lukislp/studylife-developers/compare/v1.3.1...v1.4.0) (2026-08-31)
 
 
