@@ -1,3 +1,14 @@
+## [1.4.2](https://github.com/lukislp/studylife-developers/compare/v1.4.1...v1.4.2) (2026-09-04)
+
+
+### Bug Fixes
+
+* **ci:** bump actions/setup-dotnet from 5 to 6 ([692f878](https://github.com/lukislp/studylife-developers/commit/692f8788038c10e7504494c0e0ffd4900f5c4323))
+* **ci:** bump aquasecurity/trivy-action ([033d6ff](https://github.com/lukislp/studylife-developers/commit/033d6ff250d1c03dbb5735654894b8244474f5f3))
+* **ci:** bump docker/setup-buildx-action from 4.2.0 to 4.3.0 ([8c64609](https://github.com/lukislp/studylife-developers/commit/8c64609e2603a89652723bf350a903976e2a4607))
+* **deps:** Bump the dotnet group with 2 updates ([45f7add](https://github.com/lukislp/studylife-developers/commit/45f7addfa098d71e5a67e4930479b70ae26b11bc))
+* **deps:** Bump xunit.runner.visualstudio from 3.1.5 to 4.0.0 ([5b74fe8](https://github.com/lukislp/studylife-developers/commit/5b74fe88e8d2806ff54c77958b92e777ff010c08))
+
 ## [1.4.1](https://github.com/lukislp/studylife-developers/compare/v1.4.0...v1.4.1) (2026-09-03)
 
 
