@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/lukislp/studylife-developers/compare/v1.4.2...v1.4.3) (2026-09-11)
+
+
+### Bug Fixes
+
+* **ci:** push release commits as a deploy key so the default branch can be ruleset-protected ([9cb19ab](https://github.com/lukislp/studylife-developers/commit/9cb19ab8ea4c3423c5f0a770e97285ee6c65ff91))
+
 ## [1.4.2](https://github.com/lukislp/studylife-developers/compare/v1.4.1...v1.4.2) (2026-09-04)
 
 
