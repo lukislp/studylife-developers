@@ -63,7 +63,7 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
       - id: semrel
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@2f4e0ebcd1ef42f7eb53596c2a90772b85684536 # v1.2.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@c1dd49d3d005e8912ab3420d5fdd7f3d9ee16adf # v1.2.2
         with:
           dry-run: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -297,7 +297,7 @@ jobs:
         with:
           deploy-key: ${{ secrets.SEMANTIC_RELEASE_DEPLOY_KEY }}
       - id: semrel
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@2f4e0ebcd1ef42f7eb53596c2a90772b85684536 # v1.2.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@c1dd49d3d005e8912ab3420d5fdd7f3d9ee16adf # v1.2.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
@@ -314,6 +314,6 @@ jobs:
           fi
           git checkout -B main origin/main
       - if: steps.semrel.outcome == 'failure'
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@2f4e0ebcd1ef42f7eb53596c2a90772b85684536 # v1.2.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@c1dd49d3d005e8912ab3420d5fdd7f3d9ee16adf # v1.2.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
