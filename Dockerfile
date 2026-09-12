@@ -7,8 +7,10 @@ WORKDIR /src
 # then never refreshes) - every request for it 404'd, breaking all interactivity. A single-step
 # restore+publish against the full source is what's actually verified to work; the build is cheap
 # enough here that the extra minute from the lost cache layer doesn't matter.
+COPY Directory.Build.props ./
 COPY src/StudyLifeDevelopers/ src/StudyLifeDevelopers/
-RUN dotnet publish src/StudyLifeDevelopers/StudyLifeDevelopers.csproj -c Release -o /app
+# RestoreLockedMode: the implicit restore must match the committed packages.lock.json exactly.
+RUN dotnet publish src/StudyLifeDevelopers/StudyLifeDevelopers.csproj -c Release -o /app -p:RestoreLockedMode=true
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:6a94333d37514e385650a3c81a55e5350b67253dbe136e9cf17e499c35606a8c AS runtime
 WORKDIR /app
