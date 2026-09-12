@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/lukislp/studylife-developers/compare/v1.4.4...v1.4.5) (2026-09-12)
+
+
+### Bug Fixes
+
+* **deps:** Bump Microsoft.AspNetCore.Mvc.Testing and Microsoft.NET.Test.Sdk ([21ca313](https://github.com/lukislp/studylife-developers/commit/21ca3130c1a16504a0ef047da15f0235795f722c))
+
 ## [1.4.4](https://github.com/lukislp/studylife-developers/compare/v1.4.3...v1.4.4) (2026-09-11)
 
 
