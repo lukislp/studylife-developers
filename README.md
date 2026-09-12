@@ -1,6 +1,9 @@
 # StudyLife Developers
 
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/lukislp/studylife-developers/badge)](https://scorecard.dev/viewer/?uri=github.com/lukislp/studylife-developers) [![CodeQL](https://github.com/lukislp/studylife-developers/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lukislp/studylife-developers/security/code-scanning)
+[![CI](https://github.com/lukislp/studylife-developers/actions/workflows/ci.yml/badge.svg)](https://github.com/lukislp/studylife-developers/actions/workflows/ci.yml) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/lukislp/studylife-developers/badge)](https://scorecard.dev/viewer/?uri=github.com/lukislp/studylife-developers) [![CodeQL](https://github.com/lukislp/studylife-developers/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lukislp/studylife-developers/security/code-scanning)
+[![Release](https://img.shields.io/github/v/release/lukislp/studylife-developers)](https://github.com/lukislp/studylife-developers/releases)
+[![License: AGPL-3.0](https://img.shields.io/github/license/lukislp/studylife-developers)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 
 A developer portal for registering [StudyLife](https://github.com/lukislp/studylife) add-ons —
 paired to exactly one StudyLife instance, like every other satellite in this ecosystem (Tray,
