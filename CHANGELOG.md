@@ -1,3 +1,10 @@
+## [1.4.8](https://github.com/lukislp/studylife-developers/compare/v1.4.7...v1.4.8) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** raise the studylife-developers namespace from PSS baseline to restricted ([#37](https://github.com/lukislp/studylife-developers/issues/37)) ([1458e39](https://github.com/lukislp/studylife-developers/commit/1458e3920fe989cbc2f163be178ab4aa64942c56))
+
 ## [1.4.7](https://github.com/lukislp/studylife-developers/compare/v1.4.6...v1.4.7) (2026-09-13)
 
 
