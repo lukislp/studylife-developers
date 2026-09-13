@@ -1,3 +1,10 @@
+## [1.4.11](https://github.com/lukislp/studylife-developers/compare/v1.4.10...v1.4.11) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** read-only root filesystem for studylife-developers ([#40](https://github.com/lukislp/studylife-developers/issues/40)) ([77fccb8](https://github.com/lukislp/studylife-developers/commit/77fccb8e3a2dafd70619f8bf3f4db77836324597))
+
 ## [1.4.10](https://github.com/lukislp/studylife-developers/compare/v1.4.9...v1.4.10) (2026-09-13)
 
 
