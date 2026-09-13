@@ -1,3 +1,10 @@
+## [1.4.7](https://github.com/lukislp/studylife-developers/compare/v1.4.6...v1.4.7) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** opt the KeyStore volume into the nightly Velero backup ([#36](https://github.com/lukislp/studylife-developers/issues/36)) ([71accdc](https://github.com/lukislp/studylife-developers/commit/71accdcbe062a8d4667fc6c016cd5a121473fdf8))
+
 ## [1.4.6](https://github.com/lukislp/studylife-developers/compare/v1.4.5...v1.4.6) (2026-09-12)
 
 
