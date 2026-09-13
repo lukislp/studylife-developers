@@ -69,14 +69,26 @@ spec:
           # here rather than image pull or volume attach (both measured under 5s). This is a
           # small ASP.NET Core app with no DB/migration work at startup, so it's actually ready
           # well before 10s - tightened to shrink the user-visible 503 window on every deploy.
+          #
+          # Both probes set timeoutSeconds explicitly. The Kubernetes default of 1s is too
+          # tight for a .NET app on the arm64 Raspberry Pi nodes this runs on: the weakest
+          # node sits close to its memory limit, so an ordinary load spike pushes /health past
+          # one second, the liveness probe fails failureThreshold times in a row and kubelet
+          # restarts a container that was only busy. The readiness probe keeps its deliberately
+          # short 2s period (see above) and therefore gets 3s rather than 5s, which is still
+          # three times the default; liveness gets the full 5s plus 5 consecutive failures.
           readinessProbe:
             httpGet: {path: /health, port: 8080}
             initialDelaySeconds: 2
             periodSeconds: 2
+            timeoutSeconds: 3
+            failureThreshold: 3
           livenessProbe:
             httpGet: {path: /health, port: 8080}
             initialDelaySeconds: 6
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
           volumeMounts:
             - name: data
               mountPath: /app/data
