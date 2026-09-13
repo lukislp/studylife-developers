@@ -1,3 +1,10 @@
+## [1.4.9](https://github.com/lukislp/studylife-developers/compare/v1.4.8...v1.4.9) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** add explicit egress policy for the developers portal ([#38](https://github.com/lukislp/studylife-developers/issues/38)) ([83b73ba](https://github.com/lukislp/studylife-developers/commit/83b73baa4bb84619ef209a5f18f5d7679147f32e))
+
 ## [1.4.8](https://github.com/lukislp/studylife-developers/compare/v1.4.7...v1.4.8) (2026-09-13)
 
 
