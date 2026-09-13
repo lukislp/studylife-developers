@@ -63,3 +63,31 @@ spec:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: nginx-gateway } }
       ports:
         - { protocol: TCP, port: 8080 }
+---
+# The portal's only outbound dependency: the StudyLife API it is paired with
+# (StudyLife__BaseUrl = https://studylife-web.studylife-scale.svc.cluster.local, see
+# k8s/01-config.yaml and Services/StudyLifeApiClient.cs - GET/POST /api/developer/*,
+# /internal/register-key/revoke-key). NetworkPolicy matches the POD port, not the Service
+# port: studylife-scale's studylife-web Service maps 443 -> 8443 and 80 -> 8080, so the
+# HTTPS base URL above lands on container port 8443. Port 8080 is allowed alongside it so
+# switching StudyLife__BaseUrl to plain HTTP does not need another policy change.
+#
+# Nothing else here talks to the outside world: no internet calls (the StudyLife CA is a
+# mounted file, not an OCSP/CRL fetch), no database (DataDir is a local PVC), no Kubernetes
+# API. DNS is covered by allow-dns above, and kubelet probes are not subject to
+# NetworkPolicy at all (they originate from the node, not from a pod).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: studylife-developers-egress
+  namespace: studylife-developers
+spec:
+  podSelector: { matchLabels: { app: studylife-developers } }
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: studylife-scale } }
+          podSelector: { matchLabels: { app: studylife-web } }
+      ports:
+        - { protocol: TCP, port: 8080 }
+        - { protocol: TCP, port: 8443 }
