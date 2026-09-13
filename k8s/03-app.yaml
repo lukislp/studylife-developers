@@ -33,6 +33,12 @@ spec:
   template:
     metadata:
       labels: {app: studylife-developers}
+      annotations:
+        # Opt-in to homelab-infra's nightly Velero PVC backup: /app/data is the KeyStore,
+        # i.e. every registered OAuth client of the marketplace. Losing it would invalidate
+        # every issued client_id/secret at once, so unlike a cache this is worth the
+        # kilobytes. Crash-consistent copy, same acceptance as studylife-webhooks.
+        backup.velero.io/backup-volumes: data
     spec:
       automountServiceAccountToken: false
       securityContext:
