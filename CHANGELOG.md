@@ -1,3 +1,10 @@
+## [1.4.10](https://github.com/lukislp/studylife-developers/compare/v1.4.9...v1.4.10) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** close the open egress hole in this namespace ([#39](https://github.com/lukislp/studylife-developers/issues/39)) ([1e1a0ae](https://github.com/lukislp/studylife-developers/commit/1e1a0aec2f0895a49c90480246f5c2b3644a5d35))
+
 ## [1.4.9](https://github.com/lukislp/studylife-developers/compare/v1.4.8...v1.4.9) (2026-09-13)
 
 
