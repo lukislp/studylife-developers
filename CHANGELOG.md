@@ -1,3 +1,10 @@
+## [1.4.12](https://github.com/lukislp/studylife-developers/compare/v1.4.11...v1.4.12) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** give probes a real timeout so load spikes stop killing pods ([#41](https://github.com/lukislp/studylife-developers/issues/41)) ([58a2a40](https://github.com/lukislp/studylife-developers/commit/58a2a4090eb78026540d40bfbc4513af0525141a))
+
 ## [1.4.11](https://github.com/lukislp/studylife-developers/compare/v1.4.10...v1.4.11) (2026-09-13)
 
 
