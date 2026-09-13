@@ -1,3 +1,10 @@
+## [1.4.13](https://github.com/lukislp/studylife-developers/compare/v1.4.12...v1.4.13) (2026-09-13)
+
+
+### Bug Fixes
+
+* **k8s:** seal studylife-developers-secrets so it survives a cluster rebuild ([#42](https://github.com/lukislp/studylife-developers/issues/42)) ([375ad6a](https://github.com/lukislp/studylife-developers/commit/375ad6a999cac29724f2acc36619042a40d9e3ed))
+
 ## [1.4.12](https://github.com/lukislp/studylife-developers/compare/v1.4.11...v1.4.12) (2026-09-13)
 
 
