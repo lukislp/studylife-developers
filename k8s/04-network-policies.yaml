@@ -1,7 +1,8 @@
-# Same strategy as studylife-webhooks' own k8s/04-network-policies.yaml: default-deny ingress
-# as a baseline, egress stays open (this portal calls out to whichever StudyLife instance it's
-# paired with). Bootstrap-only, NOT Flux-managed - kustomize-controller's ClusterRole has no
-# "networkpolicies" permission.
+# Default-deny in BOTH directions as the baseline (default-deny-ingress and
+# default-deny-egress), with every allowed flow spelled out as its own policy: cluster DNS in
+# allow-dns, the portal's one outbound dependency in studylife-developers-egress, and the two
+# inbound paths (studylife-web, the shared Gateway) further down. Bootstrap-only, NOT
+# Flux-managed - kustomize-controller's ClusterRole has no "networkpolicies" permission.
 #
 # Also wires up the shared NGF Gateway's ingress to the portal's own UI (see
 # k8s/06-httproute.yaml) - allow-nginx-gateway-to-app below, same pattern as studylife-web's own
@@ -29,7 +30,6 @@ spec:
       ports:
         - { protocol: UDP, port: 53 }
         - { protocol: TCP, port: 53 }
-    - {} # egress otherwise unrestricted - this policy only adds an explicit DNS allowance
 ---
 # studylife-scale has no default-deny egress, so studylife-web can already reach out
 # cross-namespace by default - this rule is the only side that needs to explicitly allow
@@ -91,3 +91,18 @@ spec:
       ports:
         - { protocol: TCP, port: 8080 }
         - { protocol: TCP, port: 8443 }
+---
+# Egress counterpart of the ingress baseline above: a pod in this namespace gets no outbound
+# access at all beyond what an explicit policy grants it (allow-dns for cluster DNS, plus the
+# per-app egress policy in this file). Until 2026-09-13 allow-dns carried a bare "- {}" rule
+# next to its DNS rule, which allowed egress to anywhere - the internet, every other namespace
+# and the node network - making the policy a no-op in practice. This baseline replaces it, so
+# a pod added here later is denied by default instead of inheriting that hole.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: studylife-developers
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
