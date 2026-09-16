@@ -27,6 +27,7 @@ public static class ScopeCatalog
         new("CourseGoals.Save", "Set course goals"),
         new("CourseGoals.Delete", "Delete course goals"),
         new("TimerState.Get", "Read live timer state"),
+        new("TimerState.Save", "Start, pause and stop the live timer"),
         new("Courses.GetAll", "Read the course catalog"),
         new("StudyPrograms.GetAll", "Read study programs"),
         new("StudyPrograms.Get", "Read a study program's detail"),
