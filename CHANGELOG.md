@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/lukislp/studylife-developers/compare/v1.4.13...v1.5.0) (2026-09-16)
+
+
+### Features
+
+* **scopes:** offer the timer control scope to registering clients ([#50](https://github.com/lukislp/studylife-developers/issues/50)) ([6a1887a](https://github.com/lukislp/studylife-developers/commit/6a1887aaf952f894908d33c94b90d48257b08fad))
+
 ## [1.4.13](https://github.com/lukislp/studylife-developers/compare/v1.4.12...v1.4.13) (2026-09-13)
 
 
