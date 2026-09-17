@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/lukislp/studylife-developers/compare/v1.5.0...v1.5.1) (2026-09-17)
+
+
+### Bug Fixes
+
+* **deps:** Bump the dotnet group with 1 update ([1196304](https://github.com/lukislp/studylife-developers/commit/11963046125ab5ab20a7bfa7a6994e3282c832ea))
+
 # [1.5.0](https://github.com/lukislp/studylife-developers/compare/v1.4.13...v1.5.0) (2026-09-16)
 
 
