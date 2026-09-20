@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/lukislp/studylife-developers/compare/v1.5.2...v1.5.3) (2026-09-20)
+
+
+### Bug Fixes
+
+* **ci:** correct missing Harden Runner allowlist ports (github.com:22, crl:80) ([#59](https://github.com/lukislp/studylife-developers/issues/59)) ([59d8406](https://github.com/lukislp/studylife-developers/commit/59d840645476fb54bc22a5c2f5f128db313a7cfd))
+
 ## [1.5.2](https://github.com/lukislp/studylife-developers/compare/v1.5.1...v1.5.2) (2026-09-20)
 
 
