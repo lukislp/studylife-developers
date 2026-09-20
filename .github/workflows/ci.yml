@@ -27,7 +27,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
@@ -51,7 +77,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -104,7 +156,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
@@ -163,7 +241,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: /tmp/digests
@@ -224,7 +328,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
@@ -270,7 +400,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -306,7 +462,33 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:443
+            crl4.digicert.com:443
+            dc.services.visualstudio.com:443
+            eastus.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
