@@ -29,6 +29,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -80,6 +81,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -160,6 +162,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -246,6 +249,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -334,6 +338,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -407,6 +412,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
@@ -470,6 +476,7 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
+            *.githubapp.com:443
             *.blob.core.windows.net:443
             aka.ms:443
             api.github.com:443
