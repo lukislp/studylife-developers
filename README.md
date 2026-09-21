@@ -186,7 +186,8 @@ it. A plain `dotnet restore` refreshes the lock files locally after a package ch
 
 Versions are cut by [semantic-release](https://semantic-release.gitbook.io/) from
 [Conventional Commit](https://www.conventionalcommits.org/) messages on `main` — see
-[CHANGELOG.md](CHANGELOG.md) for the generated history. Each release publishes a multi-arch
+[the Releases page](https://github.com/lukislp/studylife-developers/releases) for the generated
+history. Each release publishes a multi-arch
 image to `ghcr.io/lukislp/studylife-developers`, tagged `latest` and `X.Y.Z`, with an SBOM and a
 SLSA provenance attestation attached and a Sigstore keyless signature on the manifest, and is
 gated on a Trivy scan finding no fixable `CRITICAL` vulnerability. Verify a tag before pulling:
