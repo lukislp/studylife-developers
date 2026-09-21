@@ -7,6 +7,8 @@ updates:
       interval: weekly
     commit-message:
       prefix: "fix(ci)"
+    reviewers:
+      - "lukislp"
   - package-ecosystem: nuget
     directory: /
     schedule:
@@ -17,9 +19,13 @@ updates:
         patterns: ["Microsoft.*", "System.*", "Npgsql.*"]
     commit-message:
       prefix: "fix(deps)"
+    reviewers:
+      - "lukislp"
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
     commit-message:
       prefix: "fix(docker)"
+    reviewers:
+      - "lukislp"
