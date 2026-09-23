@@ -40,7 +40,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -92,7 +92,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -102,6 +102,7 @@ jobs:
             pkg-containers.githubusercontent.com:443
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
+            registry.npmjs.org:443
             rekor.sigstore.dev:443
             release-assets.githubusercontent.com:443
             results-receiver.actions.githubusercontent.com:443
@@ -173,7 +174,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -260,7 +261,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -349,7 +350,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -423,7 +424,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -487,7 +488,7 @@ jobs:
             crl3.digicert.com:80
             crl4.digicert.com:80
             dc.services.visualstudio.com:443
-            eastus.data.mcr.microsoft.com:443
+            *.data.mcr.microsoft.com:443
             fulcio.sigstore.dev:443
             ghcr.io:443
             github.com:22
@@ -497,6 +498,7 @@ jobs:
             pkg-containers.githubusercontent.com:443
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
+            registry.npmjs.org:443
             rekor.sigstore.dev:443
             release-assets.githubusercontent.com:443
             results-receiver.actions.githubusercontent.com:443
