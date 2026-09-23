@@ -12,7 +12,7 @@ COPY src/StudyLifeDevelopers/ src/StudyLifeDevelopers/
 # RestoreLockedMode: the implicit restore must match the committed packages.lock.json exactly.
 RUN dotnet publish src/StudyLifeDevelopers/StudyLifeDevelopers.csproj -c Release -o /app -p:RestoreLockedMode=true
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:6a94333d37514e385650a3c81a55e5350b67253dbe136e9cf17e499c35606a8c AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:2d584d8147faddb0d678c5748d47953e5b8e18621ed4fb7049a91381d9d7746f AS runtime
 WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080
 # DataDir (KeyStore's single-file JSON store) must exist and be owned by a non-root user
