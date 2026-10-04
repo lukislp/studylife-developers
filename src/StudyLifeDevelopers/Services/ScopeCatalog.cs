@@ -32,6 +32,7 @@ public static class ScopeCatalog
         new("StudyPrograms.GetAll", "Read study programs"),
         new("StudyPrograms.Get", "Read a study program's detail"),
         new("Metrics.GetSummary", "Read metrics summary"),
+        new("Metrics.GetAchievements", "Read achievements"),
         new("WebhooksProxy.List", "List webhook registrations"),
         new("WebhooksProxy.Create", "Create webhook registrations"),
         new("WebhooksProxy.Delete", "Delete webhook registrations"),
