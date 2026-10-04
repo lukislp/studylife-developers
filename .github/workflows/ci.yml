@@ -24,6 +24,38 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
@@ -44,6 +76,39 @@ jobs:
       next_version: ${{ steps.semrel.outputs.new_release_version }}
       published: ${{ steps.semrel.outputs.new_release_published }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            registry.npmjs.org:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -55,7 +120,7 @@ jobs:
       # get-version too: @semantic-release/git's verifyConditions runs `git push --dry-run`
       # even in dry-run mode. Same mechanism as lukislp/studylife's ci-cd.yml.
       - name: Push as the semantic-release deploy key (if configured)
-        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@962d016c5e3ee498913a8492898dd5e238ccbfb1 # v1.7.9
         with:
           deploy-key: ${{ secrets.SEMANTIC_RELEASE_DEPLOY_KEY }}
       - name: Sync to the current tip of main
@@ -63,7 +128,7 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
       - id: semrel
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@0d352a3fab2ba9099b957c4164be2411f13786e8 # v1.7.12
         with:
           dry-run: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -93,8 +158,40 @@ jobs:
     env:
       NEXT_VERSION: ${{ needs.get-version.outputs.next_version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -108,7 +205,7 @@ jobs:
           fi
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           platforms: ${{ matrix.platform }}
@@ -148,6 +245,38 @@ jobs:
     env:
       NEXT_VERSION: ${{ needs.get-version.outputs.next_version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: /tmp/digests
@@ -158,7 +287,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Create and push the multi-arch manifest
         working-directory: /tmp/digests
         run: |
@@ -205,6 +334,38 @@ jobs:
     env:
       NEXT_VERSION: ${{ needs.get-version.outputs.next_version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
@@ -212,7 +373,7 @@ jobs:
       # Same deploy-key push as the release jobs - the default branch only takes direct pushes
       # from that key, so this job cannot fall back to GITHUB_TOKEN.
       - name: Push as the semantic-release deploy key
-        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@962d016c5e3ee498913a8492898dd5e238ccbfb1 # v1.7.9
         with:
           deploy-key: ${{ secrets.SEMANTIC_RELEASE_DEPLOY_KEY }}
           required: "true"
@@ -227,17 +388,14 @@ jobs:
             exit 0
           fi
           git diff --stat
-          git config user.name "studylife-developers-deploy"
-          git config user.email "deploy@studylife.local"
-          git commit -am "chore(deploy): image ${NEXT_VERSION} [skip ci]"
-          # The branch may have moved (an out-of-band push) between checkout and now - rebase, retry.
-          for attempt in 1 2 3; do
-            git push origin HEAD:main && exit 0
-            git fetch origin main
-            git rebase origin/main
-          done
-          echo "::error::could not push the image tag bump"
-          exit 1
+      - name: Sign and push the image tag bump
+        uses: lukislp/ci-workflows/.github/actions/signed-bot-commit@962d016c5e3ee498913a8492898dd5e238ccbfb1 # v1.7.9
+        with:
+          signing-key: ${{ secrets.DEPLOY_SIGNING_KEY }}
+          committer-name: "studylife-developers-deploy"
+          committer-email: "155678024+lukislp@users.noreply.github.com"
+          commit-message: "chore(deploy): image ${{ env.NEXT_VERSION }} [skip ci]"
+          branch: main
 
   trivy:
     needs: [get-version, docker-manifest-merge]
@@ -250,6 +408,39 @@ jobs:
     env:
       NEXT_VERSION: ${{ needs.get-version.outputs.next_version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            *.blob.core.windows.net:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            *.data.mcr.microsoft.com:443
+            dc.services.visualstudio.com:443
+            fulcio.sigstore.dev:443
+            get.trivy.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            *.githubapp.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -282,6 +473,39 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            *.githubapp.com:443
+            *.blob.core.windows.net:443
+            aka.ms:443
+            api.github.com:443
+            api.nuget.org:443
+            auth.docker.io:443
+            builds.dotnet.microsoft.com:443
+            check.trivy.dev:443
+            crl3.digicert.com:80
+            crl4.digicert.com:80
+            dc.services.visualstudio.com:443
+            *.data.mcr.microsoft.com:443
+            fulcio.sigstore.dev:443
+            ghcr.io:443
+            github.com:22
+            github.com:443
+            mcr.microsoft.com:443
+            mirror.gcr.io:443
+            pkg-containers.githubusercontent.com:443
+            production.cloudfront.docker.com:443
+            registry-1.docker.io:443
+            registry.npmjs.org:443
+            rekor.sigstore.dev:443
+            release-assets.githubusercontent.com:443
+            results-receiver.actions.githubusercontent.com:443
+            run-actions-*.actions.githubusercontent.com:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -293,11 +517,11 @@ jobs:
       # get-version too: @semantic-release/git's verifyConditions runs `git push --dry-run`
       # even in dry-run mode. Same mechanism as lukislp/studylife's ci-cd.yml.
       - name: Push as the semantic-release deploy key (if configured)
-        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/deploy-key-push@962d016c5e3ee498913a8492898dd5e238ccbfb1 # v1.7.9
         with:
           deploy-key: ${{ secrets.SEMANTIC_RELEASE_DEPLOY_KEY }}
       - id: semrel
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@0d352a3fab2ba9099b957c4164be2411f13786e8 # v1.7.12
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
@@ -314,6 +538,6 @@ jobs:
           fi
           git checkout -B main origin/main
       - if: steps.semrel.outcome == 'failure'
-        uses: lukislp/ci-workflows/.github/actions/semantic-release@d44f7d506a81c2b2ae01ccecc755611df2516142 # v1.5.1
+        uses: lukislp/ci-workflows/.github/actions/semantic-release@0d352a3fab2ba9099b957c4164be2411f13786e8 # v1.7.12
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
