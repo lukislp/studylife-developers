@@ -1,0 +1,25 @@
+# Server certificate for the HTTPS listener (src/StudyLifeDevelopers/Services/ServerTls.cs,
+# k8s/03-app.yaml port 8443) that StudyLife's backend calls. Issued by StudyLife's own cluster-internal CA
+# (ClusterIssuer studylife-internal-ca-issuer, studylife repo k8s/07b-cert-manager-issuers.yaml),
+# the CA StudyLife validates add-on certificates against (its AddonTls:CaCertificatePath, see
+# its docs/SECURITY-ASSURANCE.md section 8.3). The dnsNames are the Service names StudyLife puts
+# in StudyLifeDevelopers__BaseUrl, and StudyLife checks the host name.
+#
+# cert-manager defaults (90 days, renewed 30 days before expiry). ServerTls reloads the renewed
+# files from the mounted Secret without a restart. Flux-managed (k8s/flux-deploy/), the
+# reconciler's ClusterRole already covers cert-manager.io/certificates.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: studylife-developers-tls
+  namespace: studylife-developers
+spec:
+  secretName: studylife-developers-tls
+  dnsNames:
+    - studylife-developers.studylife-developers.svc.cluster.local
+    - studylife-developers.studylife-developers.svc
+    - studylife-developers
+  issuerRef:
+    name: studylife-internal-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

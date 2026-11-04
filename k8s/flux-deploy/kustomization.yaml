@@ -6,3 +6,6 @@ resources:
   - ../01-config.yaml
   - ../03-app.yaml
   - ../05-studylife-ca.yaml
+  # cert-manager Certificate for the HTTPS listener; the Flux reconciler's ClusterRole
+  # (homelab-infra flux/01-reconciler-rbac.yaml) covers cert-manager.io/certificates.
+  - ../07-tls-certificate.yaml

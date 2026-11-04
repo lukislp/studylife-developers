@@ -59,8 +59,21 @@ spec:
           envFrom:
             - configMapRef: {name: studylife-developers-config}
             - secretRef: {name: studylife-developers-secrets}
+          # HTTPS listener for the StudyLife -> studylife-developers hop (Services/ServerTls.cs)
+          # on 8443, with the cert-manager certificate from 07-tls-certificate.yaml. StudyLife
+          # calls this port and validates the certificate against its internal CA. Removing
+          # these two variables is the explicit opt-out back to plain HTTP only.
+          env:
+            - name: ServerTls__CertPath
+              value: /etc/studylife-developers-tls/tls.crt
+            - name: ServerTls__KeyPath
+              value: /etc/studylife-developers-tls/tls.key
           ports:
             - containerPort: 8080
+            # ServerTls:Port default: HTTPS for the same app. 8080 stays for the kubelet probes
+            # and the gateway route (06-httproute.yaml); StudyLife's backend only uses 8443 (its
+            # AddonTls:RequireHttps refuses http:// URLs).
+            - containerPort: 8443
           resources:
             requests: {cpu: 50m, memory: 96Mi}
             limits: {cpu: 250m, memory: 256Mi}
@@ -95,6 +108,9 @@ spec:
             - name: studylife-ca
               mountPath: /etc/studylife-ca
               readOnly: true
+            - name: tls
+              mountPath: /etc/studylife-developers-tls
+              readOnly: true
             # .NET creates its diagnostic IPC socket and debug pipes here on every start.
             - name: tmp
               mountPath: /tmp
@@ -113,6 +129,10 @@ spec:
           emptyDir: {sizeLimit: 16Mi}
         - name: studylife-ca
           configMap: {name: studylife-internal-ca}
+        # Written by cert-manager (07-tls-certificate.yaml). A Secret volume follows renewals,
+        # and ServerTls reloads the files without a restart.
+        - name: tls
+          secret: {secretName: studylife-developers-tls}
 ---
 apiVersion: v1
 kind: Service
@@ -126,3 +146,8 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+    # HTTPS for the StudyLife -> studylife-developers hop (ServerTls, 07-tls-certificate.yaml).
+    # StudyLife's StudyLifeDevelopers__BaseUrl points here.
+    - name: https
+      port: 8443
+      targetPort: 8443
