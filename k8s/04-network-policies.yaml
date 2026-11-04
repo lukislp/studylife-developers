@@ -49,6 +49,10 @@ spec:
           podSelector: { matchLabels: { app: studylife-web } }
       ports:
         - { protocol: TCP, port: 8080 }
+        # HTTPS listener (ServerTls, port 8443) - the port StudyLife's StudyLifeDevelopers__BaseUrl
+        # uses once it calls over TLS. 8080 stays allowed until that switch is live and can be
+        # dropped from this rule afterwards (the gateway rule below still needs 8080).
+        - { protocol: TCP, port: 8443 }
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

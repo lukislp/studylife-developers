@@ -96,7 +96,35 @@ portal's outbound call fails the TLS handshake:
 | `StudyLifeDevelopers__SharedSecret` | *(empty)* | Must match the studylife repo's `StudyLifeDevelopers:SharedSecret` exactly — authenticates every `/internal/*` call as genuinely coming from StudyLife. While it is empty, every `/internal/*` call is rejected with `401` |
 | `StudyLife__CaCertPath` | *(empty)* | Path to a PEM certificate to trust for the StudyLife connection, for an instance behind a private CA. Unset — or pointing at a file that doesn't exist — means the system trust store, so a plain-HTTP or publicly-trusted setup needs nothing here |
 | `DataDir` | `data` | Directory for the single-file key store (`developer-key.json`) |
-| `ASPNETCORE_HTTP_PORTS` | `8080` *(set in the image)* | Port Kestrel listens on |
+| `ASPNETCORE_HTTP_PORTS` | `8080` *(set in the image)* | Plain HTTP port Kestrel listens on |
+| `ServerTls__CertPath` / `ServerTls__KeyPath` | *(empty)* | PEM certificate chain and private key. When both are set, Kestrel also serves HTTPS on `ServerTls__Port` (see [TLS](#tls)). Empty is the explicit opt-out to plain HTTP only |
+| `ServerTls__Port` | `8443` | HTTPS port |
+| `ServerTls__ReloadIntervalSeconds` | `300` | How often renewed certificate files are picked up |
+
+### TLS
+
+StudyLife's backend sends the shared secret and the user's API key to `/internal/*`, so that hop
+is encrypted. With `ServerTls__CertPath` and `ServerTls__KeyPath` set,
+[`ServerTls`](src/StudyLifeDevelopers/Services/ServerTls.cs) keeps the plain port(s) from
+`ASPNETCORE_HTTP_PORTS` (kubelet probes, the gateway route) and adds an HTTPS listener on
+`ServerTls__Port`, TLS 1.2 and 1.3 only. Only one of the two set, or a pair that cannot be
+loaded, stops the start, so the portal never runs without the TLS listener it was asked for. The
+certificate is re-read when the files change (checked at most every
+`ServerTls__ReloadIntervalSeconds`), so a renewed certificate is served without a restart.
+
+On Kubernetes the certificate is a cert-manager `Certificate`
+([`k8s/07-tls-certificate.yaml`](k8s/07-tls-certificate.yaml), Flux-managed) from StudyLife's
+internal CA (`studylife-internal-ca-issuer`) for
+`studylife-developers.studylife-developers.svc.cluster.local`,
+`studylife-developers.studylife-developers.svc` and `studylife-developers`. StudyLife validates it
+against that CA, host name included (`AddonTls:CaCertificatePath`, see StudyLife's
+[SECURITY-ASSURANCE.md](https://github.com/lukislp/studylife/blob/main/docs/SECURITY-ASSURANCE.md)
+section 8.3), and with `AddonTls:RequireHttps` refuses `http://` add-on URLs.
+
+Rollout order: this repository first (Certificate, port and variables through Flux; the listener
+starts with the release image), then the updated `k8s/04-network-policies.yaml` applied by hand
+(it only adds `8443`), then StudyLife's switch of `StudyLifeDevelopers__BaseUrl` to
+`https://studylife-developers.studylife-developers.svc.cluster.local:8443`.
 
 Configuration goes through the standard ASP.NET Core provider chain, so every key above works as
 an environment variable with `__` separating the sections, as a `dotnet user-secrets` entry, or
@@ -109,7 +137,7 @@ written for, reconciled by [Flux](https://fluxcd.io/). The split follows the sam
 the other apps on that cluster: namespace, Secret, network policies and the HTTPRoute are
 bootstrap objects applied once by hand (the Flux reconciler's ClusterRole deliberately cannot
 manage those kinds), while `k8s/flux-deploy/` (ConfigMap, PVC, Deployment, Service, CA
-ConfigMap) is what Flux reconciles continuously.
+ConfigMap, TLS Certificate) is what Flux reconciles continuously.
 
 ```bash
 kubectl apply -f k8s/00-namespace.yaml
@@ -119,7 +147,7 @@ kubectl apply -f k8s/flux/                   # GitRepository + Kustomization -> 
 ```
 
 Without Flux, applying that same curated set once by hand does the job:
-`kubectl apply -f k8s/01-config.yaml -f k8s/03-app.yaml -f k8s/05-studylife-ca.yaml`.
+`kubectl apply -f k8s/01-config.yaml -f k8s/03-app.yaml -f k8s/05-studylife-ca.yaml -f k8s/07-tls-certificate.yaml`.
 
 For another cluster, adjust `StudyLife__BaseUrl` in `k8s/01-config.yaml` (it points at the paired
 instance's in-cluster Service DNS) and the hostnames in `k8s/06-httproute.yaml`, and replace

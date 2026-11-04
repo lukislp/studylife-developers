@@ -4,6 +4,10 @@ using StudyLifeDevelopers.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// HTTPS listener for the StudyLife -> studylife-developers hop (ServerTls:CertPath/KeyPath, see
+// ServerTls and k8s/03-app.yaml). Plain HTTP only when neither is set.
+ServerTls.Configure(builder);
+
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<KeyStore>();
