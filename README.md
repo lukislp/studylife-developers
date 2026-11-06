@@ -212,7 +212,7 @@ it. A plain `dotnet restore` refreshes the lock files locally after a package ch
 
 ## Releases and images
 
-Versions are cut by [semantic-release](https://semantic-release.gitbook.io/) from
+Versions are cut by the [lktec-bot](https://github.com/lukislp/lktec-bot) App's release module from
 [Conventional Commit](https://www.conventionalcommits.org/) messages on `main` — see
 [the Releases page](https://github.com/lukislp/studylife-developers/releases) for the generated
 history. Each release publishes a multi-arch
