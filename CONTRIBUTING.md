@@ -1,6 +1,6 @@
-# Contributing to StudyLife Developers
+# Contributing to StudyAtrium Developers
 
-Thanks for taking the time. The StudyLife developer portal is a single-maintainer project, so the
+Thanks for taking the time. The StudyAtrium developer portal is a single-maintainer project, so the
 process is deliberately small - but it is the same for every change, including the maintainer's
 own.
 
@@ -35,7 +35,7 @@ own.
   `--locked-mode`, so a csproj that disagrees with its lock file fails the restore instead of
   silently updating it. A plain `dotnet restore StudyLifeDevelopers.slnx` refreshes them locally
   after a package change - commit the result.
-- **The shared secret stays out of the repo.** The portal pairs with a StudyLife instance over
+- **The shared secret stays out of the repo.** The portal pairs with a StudyAtrium instance over
   `StudyLifeDevelopers:SharedSecret`. Use user-secrets locally; never commit a real value or a
   real instance URL.
 
@@ -45,8 +45,8 @@ Requires the .NET 10 SDK.
 
 ```bash
 dotnet restore StudyLifeDevelopers.slnx
-dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLife:BaseUrl" "https://studylife.example.com"
-dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLifeDevelopers:SharedSecret" "<the same value your StudyLife instance has>"
+dotnet user-secrets --project src/StudyLifeDevelopers set "StudyAtrium:BaseUrl" "https://studylife.example.com"
+dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLifeDevelopers:SharedSecret" "<the same value your StudyAtrium instance has>"
 dotnet run --project src/StudyLifeDevelopers --urls http://localhost:5080
 ```
 

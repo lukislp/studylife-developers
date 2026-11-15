@@ -1,46 +1,48 @@
-# StudyLife Developers
+# StudyAtrium Developers
+
+(formerly StudyLife)
 
 [![CI](https://github.com/lukislp/studylife-developers/actions/workflows/ci.yml/badge.svg)](https://github.com/lukislp/studylife-developers/actions/workflows/ci.yml) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/lukislp/studylife-developers/badge)](https://scorecard.dev/viewer/?uri=github.com/lukislp/studylife-developers) [![CodeQL](https://github.com/lukislp/studylife-developers/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lukislp/studylife-developers/security/code-scanning)
 [![Release](https://img.shields.io/github/v/release/lukislp/studylife-developers)](https://github.com/lukislp/studylife-developers/releases)
 [![License: AGPL-3.0](https://img.shields.io/github/license/lukislp/studylife-developers)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 
-A developer portal for registering [StudyLife](https://github.com/lukislp/studylife) add-ons —
-paired to exactly one StudyLife instance, like every other satellite in this ecosystem (Tray,
+A developer portal for registering [StudyAtrium](https://github.com/lukislp/studylife) add-ons —
+paired to exactly one StudyAtrium instance, like every other satellite in this ecosystem (Tray,
 Webhooks, HACS, MCP). Register a new add-on here, pick which scopes it needs, get a `ClientId`
 and a redirect URI to build into your app, then submit it to
 [studylife-marketplace](https://github.com/lukislp/studylife-marketplace) once it's ready for
 other people to install.
 
 It is a small ASP.NET Core / Blazor Server app — one page listing your registered add-ons, one
-registration form, a single-file key store, and two `/internal/*` endpoints its paired StudyLife
+registration form, a single-file key store, and two `/internal/*` endpoints its paired StudyAtrium
 instance calls. No database, and no login screen of its own; see
 [Operating it](#operating-it) for what that means for where you expose it.
 
 ## How it works
 
-1. **Enable the connection**: on your paired StudyLife instance's Setup page, enable the
-   "studylife-developers connection" card. StudyLife generates a key and registers it with this
+1. **Enable the connection**: on your paired StudyAtrium instance's Setup page, enable the
+   "studylife-developers connection" card. StudyAtrium generates a key and registers it with this
    portal automatically — you never see or copy it (same pattern as the studylife-ai card).
 2. **Register an add-on**: open this portal, click "Register new add-on", give it a name,
    description, redirect URI(s), and the scopes it needs.
-3. **Build your add-on**: it authenticates end users via StudyLife's generic connect flow —
-   `POST /api/auth/connect` (session-required, on the user's own StudyLife instance) with your
+3. **Build your add-on**: it authenticates end users via StudyAtrium's generic connect flow —
+   `POST /api/auth/connect` (session-required, on the user's own StudyAtrium instance) with your
    `ClientId`, then `POST /api/auth/assertion-exchange` server-to-server to redeem the resulting
    assertion for a real API key. See the studylife repo's `AuthController.10.OAuthClients.cs` for
    the exact request/response shapes.
 4. **Publish it**: once it works end to end against your own account, submit a manifest to
    [studylife-marketplace](https://github.com/lukislp/studylife-marketplace) via pull request so
-   other StudyLife instances can discover and install it.
+   other StudyAtrium instances can discover and install it.
 
 ## What this portal is NOT
 
 It doesn't host or run your add-on's code — it only manages the *registration* (name, scopes,
-redirect URIs) on your paired StudyLife instance. Your add-on runs wherever you deploy it.
+redirect URIs) on your paired StudyAtrium instance. Your add-on runs wherever you deploy it.
 
 ## Quick start
 
-You need a StudyLife instance to pair with: the portal talks to that instance's
+You need a StudyAtrium instance to pair with: the portal talks to that instance's
 `/api/developer/*` endpoints, and it only becomes usable once the instance has pushed its key
 here (step 1 above). Until then the UI shows a "not connected" state instead of attempting any
 request.
@@ -49,8 +51,8 @@ request.
 
 ```bash
 dotnet restore StudyLifeDevelopers.slnx
-dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLife:BaseUrl" "https://studylife.example.com"
-dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLifeDevelopers:SharedSecret" "<the same value your StudyLife instance has>"
+dotnet user-secrets --project src/StudyLifeDevelopers set "StudyAtrium:BaseUrl" "https://studylife.example.com"
+dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLifeDevelopers:SharedSecret" "<the same value your StudyAtrium instance has>"
 dotnet run --project src/StudyLifeDevelopers --urls http://localhost:5080
 ```
 
@@ -60,7 +62,7 @@ Then open <http://localhost:5080>. Both settings work equally as environment var
 working tree. The key store lands in `data/developer-key.json` relative to where the process was
 started (`DataDir`, gitignored).
 
-For the pairing to complete, your StudyLife instance has to be able to reach this URL: it is the
+For the pairing to complete, your StudyAtrium instance has to be able to reach this URL: it is the
 side calling `POST /internal/register-key` here, not the other way round.
 
 ### As a container
@@ -68,7 +70,7 @@ side calling `POST /internal/register-key` here, not the other way round.
 ```bash
 docker run --rm -p 8080:8080 \
   -e StudyLife__BaseUrl="https://studylife.example.com" \
-  -e StudyLifeDevelopers__SharedSecret="<the same value your StudyLife instance has>" \
+  -e StudyLifeDevelopers__SharedSecret="<the same value your StudyAtrium instance has>" \
   -v studylife-developers-data:/app/data \
   ghcr.io/lukislp/studylife-developers:latest
 ```
@@ -79,7 +81,7 @@ writes its key store to `/app/data` — the volume above is what makes a complet
 a container restart. `docker build -t studylife-developers .` builds the same image from this
 repo if you'd rather not pull it.
 
-If your StudyLife instance serves HTTPS with a certificate from a private CA (the cluster setup
+If your StudyAtrium instance serves HTTPS with a certificate from a private CA (the cluster setup
 below does), mount that CA's certificate and point `StudyLife__CaCertPath` at it — otherwise the
 portal's outbound call fails the TLS handshake:
 
@@ -92,9 +94,9 @@ portal's outbound call fails the TLS handshake:
 
 | Env var | Default | Description |
 | --- | --- | --- |
-| `StudyLife__BaseUrl` | *(empty)* | Base URL of the paired StudyLife instance's API |
-| `StudyLifeDevelopers__SharedSecret` | *(empty)* | Must match the studylife repo's `StudyLifeDevelopers:SharedSecret` exactly — authenticates every `/internal/*` call as genuinely coming from StudyLife. While it is empty, every `/internal/*` call is rejected with `401` |
-| `StudyLife__CaCertPath` | *(empty)* | Path to a PEM certificate to trust for the StudyLife connection, for an instance behind a private CA. Unset — or pointing at a file that doesn't exist — means the system trust store, so a plain-HTTP or publicly-trusted setup needs nothing here |
+| `StudyLife__BaseUrl` | *(empty)* | Base URL of the paired StudyAtrium instance's API |
+| `StudyLifeDevelopers__SharedSecret` | *(empty)* | Must match the studylife repo's `StudyLifeDevelopers:SharedSecret` exactly — authenticates every `/internal/*` call as genuinely coming from StudyAtrium. While it is empty, every `/internal/*` call is rejected with `401` |
+| `StudyLife__CaCertPath` | *(empty)* | Path to a PEM certificate to trust for the StudyAtrium connection, for an instance behind a private CA. Unset — or pointing at a file that doesn't exist — means the system trust store, so a plain-HTTP or publicly-trusted setup needs nothing here |
 | `DataDir` | `data` | Directory for the single-file key store (`developer-key.json`) |
 | `ASPNETCORE_HTTP_PORTS` | `8080` *(set in the image)* | Plain HTTP port Kestrel listens on |
 | `ServerTls__CertPath` / `ServerTls__KeyPath` | *(empty)* | PEM certificate chain and private key. When both are set, Kestrel also serves HTTPS on `ServerTls__Port` (see [TLS](#tls)). Empty is the explicit opt-out to plain HTTP only |
@@ -103,7 +105,7 @@ portal's outbound call fails the TLS handshake:
 
 ### TLS
 
-StudyLife's backend sends the shared secret and the user's API key to `/internal/*`, so that hop
+StudyAtrium's backend sends the shared secret and the user's API key to `/internal/*`, so that hop
 is encrypted. With `ServerTls__CertPath` and `ServerTls__KeyPath` set,
 [`ServerTls`](src/StudyLifeDevelopers/Services/ServerTls.cs) keeps the plain port(s) from
 `ASPNETCORE_HTTP_PORTS` (kubelet probes, the gateway route) and adds an HTTPS listener on
@@ -113,17 +115,17 @@ certificate is re-read when the files change (checked at most every
 `ServerTls__ReloadIntervalSeconds`), so a renewed certificate is served without a restart.
 
 On Kubernetes the certificate is a cert-manager `Certificate`
-([`k8s/07-tls-certificate.yaml`](k8s/07-tls-certificate.yaml), Flux-managed) from StudyLife's
+([`k8s/07-tls-certificate.yaml`](k8s/07-tls-certificate.yaml), Flux-managed) from StudyAtrium's
 internal CA (`studylife-internal-ca-issuer`) for
 `studylife-developers.studylife-developers.svc.cluster.local`,
-`studylife-developers.studylife-developers.svc` and `studylife-developers`. StudyLife validates it
-against that CA, host name included (`AddonTls:CaCertificatePath`, see StudyLife's
+`studylife-developers.studylife-developers.svc` and `studylife-developers`. StudyAtrium validates it
+against that CA, host name included (`AddonTls:CaCertificatePath`, see StudyAtrium's
 [SECURITY-ASSURANCE.md](https://github.com/lukislp/studylife/blob/main/docs/SECURITY-ASSURANCE.md)
 section 8.3), and with `AddonTls:RequireHttps` refuses `http://` add-on URLs.
 
 Rollout order: this repository first (Certificate, port and variables through Flux; the listener
 starts with the release image), then the updated `k8s/04-network-policies.yaml` applied by hand
-(it only adds `8443`), then StudyLife's switch of `StudyLifeDevelopers__BaseUrl` to
+(it only adds `8443`), then StudyAtrium's switch of `StudyLifeDevelopers__BaseUrl` to
 `https://studylife-developers.studylife-developers.svc.cluster.local:8443`.
 
 Configuration goes through the standard ASP.NET Core provider chain, so every key above works as
@@ -153,7 +155,7 @@ For another cluster, adjust `StudyLife__BaseUrl` in `k8s/01-config.yaml` (it poi
 instance's in-cluster Service DNS) and the hostnames in `k8s/06-httproute.yaml`, and replace
 `k8s/02-secret-sealed.yaml` — it is encrypted for one specific sealed-secrets controller and is
 useless anywhere else. `k8s/05-studylife-ca.yaml` carries the public root certificate of that
-StudyLife instance's internal CA; substitute your own, or drop `StudyLife__CaCertPath` from the
+StudyAtrium instance's internal CA; substitute your own, or drop `StudyLife__CaCertPath` from the
 ConfigMap entirely if your instance has a publicly trusted certificate.
 
 The Deployment runs a single replica with `strategy: Recreate` (the key store is a plain JSON
@@ -165,15 +167,15 @@ The namespace enforces the `restricted` Pod Security Standard.
 
 - **Health**: `GET /health` returns `{"status":"ok"}` and backs both the readiness and the
   liveness probe.
-- **State**: exactly one file, `developer-key.json` in `DataDir` — the key the paired StudyLife
+- **State**: exactly one file, `developer-key.json` in `DataDir` — the key the paired StudyAtrium
   instance registered. On the cluster that is a 64Mi Longhorn PVC, opted into the nightly Velero
   PVC backup through the `backup.velero.io/backup-volumes` annotation. Nothing else is
-  persisted: the add-on registrations themselves live on the StudyLife instance, not here.
-- **Pairing lifecycle**: enabling the card on StudyLife's Setup page calls
+  persisted: the add-on registrations themselves live on the StudyAtrium instance, not here.
+- **Pairing lifecycle**: enabling the card on StudyAtrium's Setup page calls
   `POST /internal/register-key`, disabling it calls `POST /internal/revoke-key`. Both are
-  authenticated by an `X-StudyLife-Shared-Secret` header against
+  authenticated by an `X-StudyAtrium-Shared-Secret` header against
   `StudyLifeDevelopers__SharedSecret`, so rotating that secret means changing it on both sides —
-  until then StudyLife's calls get a `401` and the pairing cannot be re-established. Losing the
+  until then StudyAtrium's calls get a `401` and the pairing cannot be re-established. Losing the
   key store is recoverable the same way: toggle the card off and on again to re-register.
 - **Rollouts**: `Recreate` plus a single ReadWriteOnce volume means every deploy has a real gap
   between the old pod stopping and the new one serving, measured at roughly 15 seconds on that

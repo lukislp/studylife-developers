@@ -79,7 +79,7 @@
         {
             List<DeveloperClientDto> clients;
             try { clients = await Api.GetClientsAsync(); }
-            catch (Exception ex) { _error = $"Couldn't reach StudyLife: {ex.Message}"; _notFound = true; _loading = false; return; }
+            catch (Exception ex) { _error = $"Couldn't reach StudyAtrium: {ex.Message}"; _notFound = true; _loading = false; return; }
 
             _editing = clients.FirstOrDefault(c => c.ClientId == ClientId);
             if (_editing is null) { _notFound = true; _loading = false; return; }
@@ -137,7 +137,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Couldn't reach StudyLife: {ex.Message}";
+            _error = $"Couldn't reach StudyAtrium: {ex.Message}";
         }
         finally { _busy = false; }
     }
