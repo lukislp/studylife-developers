@@ -173,7 +173,7 @@ The namespace enforces the `restricted` Pod Security Standard.
   persisted: the add-on registrations themselves live on the StudyAtrium instance, not here.
 - **Pairing lifecycle**: enabling the card on StudyAtrium's Setup page calls
   `POST /internal/register-key`, disabling it calls `POST /internal/revoke-key`. Both are
-  authenticated by an `X-StudyAtrium-Shared-Secret` header against
+  authenticated by an `X-StudyLife-Shared-Secret` header against
   `StudyLifeDevelopers__SharedSecret`, so rotating that secret means changing it on both sides —
   until then StudyAtrium's calls get a `401` and the pairing cannot be re-established. Losing the
   key store is recoverable the same way: toggle the card off and on again to re-register.
