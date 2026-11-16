@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StudyLifeDevelopers.Services;
+using StudyLifeDevelopers.Hosting;
 
 namespace StudyLifeDevelopers.Tests;
 
@@ -26,17 +26,18 @@ public sealed class ServerTlsTests : IDisposable
     public void Dispose() => Directory.Delete(_dir, recursive: true);
 
     [Fact]
-    public void Configure_without_settings_changes_nothing()
+    public void Configure_without_settings_keeps_the_internal_listener_plain()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.False(ServerTls.Configure(builder));
+        Assert.Null(ServerTls.LoadCertificate(builder.Configuration));
+        Assert.False(PortalListeners.Configure(builder).InternalUsesTls);
     }
 
     [Fact]
     public void Configure_rejects_a_half_configured_pair()
     {
         var builder = Builder(new Dictionary<string, string?> { ["ServerTls:CertPath"] = "/etc/tls/tls.crt" });
-        var ex = Assert.Throws<InvalidOperationException>(() => ServerTls.Configure(builder));
+        var ex = Assert.Throws<InvalidOperationException>(() => PortalListeners.Configure(builder));
         Assert.Contains("set together", ex.Message);
     }
 
@@ -48,7 +49,7 @@ public sealed class ServerTlsTests : IDisposable
             ["ServerTls:CertPath"] = Path.Combine(_dir, "missing.crt"),
             ["ServerTls:KeyPath"] = Path.Combine(_dir, "missing.key"),
         });
-        Assert.Throws<FileNotFoundException>(() => ServerTls.Configure(builder));
+        Assert.Throws<FileNotFoundException>(() => PortalListeners.Configure(builder));
     }
 
     [Theory]
@@ -56,7 +57,7 @@ public sealed class ServerTlsTests : IDisposable
     [InlineData("8080", new[] { 8080 })]
     [InlineData("8080;8081", new[] { 8080, 8081 })]
     public void ParseHttpPorts_reads_aspnetcore_http_ports(string? value, int[] expected) =>
-        Assert.Equal(expected, ServerTls.ParseHttpPorts(value));
+        Assert.Equal(expected, ListenerLayout.ParseHttpPorts(value));
 
     [Fact]
     public async Task Serves_https_trusted_by_the_private_ca_and_keeps_plain_http()
@@ -72,7 +73,7 @@ public sealed class ServerTlsTests : IDisposable
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        // The plain port (kubelet probes, gateway) is still served.
+        // The plain public port (kubelet probes, gateway) is still served.
         using (var plain = new HttpClient())
         {
             var response = await plain.GetAsync(new Uri($"http://localhost:{httpPort}/health"));
@@ -151,7 +152,7 @@ public sealed class ServerTlsTests : IDisposable
             ["ServerTls:Port"] = "0",
             ["HTTP_PORTS"] = "0",
         });
-        Assert.True(ServerTls.Configure(builder));
+        Assert.True(PortalListeners.Configure(builder).InternalUsesTls);
         var app = builder.Build();
         app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
         await app.StartAsync();

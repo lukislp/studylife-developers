@@ -34,7 +34,9 @@ spec:
 # studylife-scale has no default-deny egress, so studylife-web can already reach out
 # cross-namespace by default - this rule is the only side that needs to explicitly allow
 # anything, admitting exactly the studylife-web pod's calls to /internal/register-key/
-# revoke-key (DeveloperProxyClient).
+# revoke-key (DeveloperProxyClient) on the internal HTTPS port 8443. The plain port 8080 is no
+# longer allowed from studylife-web: it only serves the signed-in UI, and /internal/* does not
+# exist there (audit 2026-11-16, finding M6).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -48,10 +50,6 @@ spec:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: studylife-scale } }
           podSelector: { matchLabels: { app: studylife-web } }
       ports:
-        - { protocol: TCP, port: 8080 }
-        # HTTPS listener (ServerTls, port 8443) - the port StudyLife's StudyLifeDevelopers__BaseUrl
-        # uses once it calls over TLS. 8080 stays allowed until that switch is live and can be
-        # dropped from this rule afterwards (the gateway rule below still needs 8080).
         - { protocol: TCP, port: 8443 }
 ---
 apiVersion: networking.k8s.io/v1
@@ -66,12 +64,14 @@ spec:
     - from:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: nginx-gateway } }
       ports:
+        # The public port only - the internal port 8443 is never reachable from the gateway.
         - { protocol: TCP, port: 8080 }
 ---
 # The portal's only outbound dependency: the StudyLife API it is paired with
 # (StudyLife__BaseUrl = https://studylife-web.studylife-scale.svc.cluster.local, see
 # k8s/01-config.yaml and Services/StudyLifeApiClient.cs - GET/POST /api/developer/*,
-# /internal/register-key/revoke-key). NetworkPolicy matches the POD port, not the Service
+# GET /api/auth/whoami - and Services/StudyLifeSignInClient.cs - POST
+# /api/auth/assertion-exchange for the sign-in). NetworkPolicy matches the POD port, not the Service
 # port: studylife-scale's studylife-web Service maps 443 -> 8443 and 80 -> 8080, so the
 # HTTPS base URL above lands on container port 8443. Port 8080 is allowed alongside it so
 # switching StudyLife__BaseUrl to plain HTTP does not need another policy change.

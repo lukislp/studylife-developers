@@ -12,6 +12,16 @@
                 <span class="nav-icon">@(Api.Connected ? "●" : "○")</span>
                 <span class="nav-label">@(Api.Connected ? "Connected" : "Not connected")</span>
             </span>
+            <AuthorizeView>
+                @* Plain form POST with the antiforgery token, see PortalSignInEndpoints.LogoutAsync. *@
+                <form method="post" action="@PortalSignInEndpoints.LogoutPath" data-enhance="false">
+                    <AntiforgeryToken />
+                    <button type="submit" class="nav-item">
+                        <span class="nav-icon">⇥</span>
+                        <span class="nav-label">Sign out</span>
+                    </button>
+                </form>
+            </AuthorizeView>
         </div>
     </nav>
     <main class="main-content">

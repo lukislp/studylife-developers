@@ -6,15 +6,17 @@
 # it's only a vehicle for a trusted (Cloudflare-issued) certificate on traffic NGINX Proxy
 # Manager terminates and forwards inside the network, never port-forwarded out.
 #
-# Deliberately NO BackendTLSPolicy, unlike studylife-web/uptime-kuma/grafana's HTTPRoutes: this
-# app's own HTTP transport (ASPNETCORE_HTTP_PORTS=8080, see Program.cs) only ever speaks plain
-# HTTP - it does not terminate TLS itself.
+# Deliberately NO BackendTLSPolicy, unlike studylife-web/uptime-kuma/grafana's HTTPRoutes: the
+# portal's public port (8080, ASPNETCORE_HTTP_PORTS) speaks plain HTTP. The backend is that
+# public port only: the internal port 8443 (/internal/*, StudyLife's shared-secret calls) is
+# never referenced here, and /internal/* does not exist on 8080.
 #
-# NOTE: the Blazor UI behind this route has no login screen of its own (single-tenant portal,
-# paired to exactly one studylife instance - see docs/decisions equivalent reasoning in the
-# repo). That's an acceptable risk on this internal-only Gateway (same trust boundary as
-# grafana/uptime-kuma), not a gap specific to this route, but flagged here in case that
-# assumption ever changes (e.g. this Gateway becoming reachable from a less trusted network).
+# Everything behind this route requires sign-in (audit 2026-11-16, finding M6, closed): the
+# portal signs the operator in through the paired StudyAtrium instance's consent flow and only
+# admits the account it is paired with (src/StudyLifeDevelopers/Auth). The Host header is
+# pinned to the hostnames below plus the internal ones (AllowedHosts, k8s/01-config.yaml), so a
+# DNS-rebinding page cannot drive the portal either. The earlier "no login screen, accepted on
+# the internal Gateway" stance no longer applies.
 #
 # Requires a DNS entry for studylife-developers.heim.lan pointing at the Gateway's MetalLB IP,
 # plus an NGINX Proxy Manager proxy host forwarding studylife-developers.lukas2311-homelab.com

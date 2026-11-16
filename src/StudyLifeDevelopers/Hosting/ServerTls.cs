@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 
-namespace StudyLifeDevelopers.Services;
+namespace StudyLifeDevelopers.Hosting;
 
 /// <summary>
 /// HTTPS listener for the StudyLife -> studylife-developers hop. StudyLife's
@@ -13,48 +13,43 @@ namespace StudyLifeDevelopers.Services;
 /// the certificate against its own internal CA, host name included (its AddonTls:* settings),
 /// so the certificate is the cert-manager one from k8s/07-tls-certificate.yaml.
 ///
-/// With ServerTls:CertPath and ServerTls:KeyPath set (PEM certificate chain and key), Kestrel
-/// listens on the plain HTTP port(s) from ASPNETCORE_HTTP_PORTS as before (kubelet probes and the
-/// gateway route) and additionally on ServerTls:Port (default 8443) over HTTPS, TLS 1.2 minimum.
-/// Only one of the two paths set, or a pair that cannot be loaded, stops the start: the service
-/// never runs without the TLS listener it was asked for. Neither set (the default) is the
-/// explicit opt-out to plain HTTP only.
+/// With ServerTls:CertPath and ServerTls:KeyPath set (PEM certificate chain and key), the
+/// internal listener (see ListenerLayout: /internal/* and /health only, default port
+/// ServerTls:Port = 8443) speaks HTTPS, TLS 1.2 minimum; the public port(s) stay plain HTTP for
+/// the kubelet probes and the gateway route. Only one of the two paths set, or a pair that cannot
+/// be loaded, stops the start: the service never runs without the TLS listener it was asked for.
+/// Neither set (the default) is the explicit opt-out to a plain-HTTP internal listener.
 /// </summary>
 public static class ServerTls
 {
     public const string SectionName = "ServerTls";
     public const int DefaultPort = 8443;
 
-    /// <summary>Wires the HTTPS listener into <paramref name="builder"/> when configured.
-    /// Returns false (and changes nothing) when TLS is not configured.</summary>
-    public static bool Configure(WebApplicationBuilder builder)
+    /// <summary>True when either certificate path is set (a half-set pair is rejected by
+    /// <see cref="LoadCertificate"/>).</summary>
+    public static bool IsConfigured(IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        var section = builder.Configuration.GetSection(SectionName);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var section = configuration.GetSection(SectionName);
+        return !string.IsNullOrWhiteSpace(section["CertPath"]) || !string.IsNullOrWhiteSpace(section["KeyPath"]);
+    }
+
+    /// <summary>Loads the configured certificate pair, or returns null when TLS is not
+    /// configured. Throws when only one path is set or the pair cannot be loaded.</summary>
+    public static ReloadingCertificate? LoadCertificate(IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var section = configuration.GetSection(SectionName);
         var certPath = section["CertPath"];
         var keyPath = section["KeyPath"];
         if (string.IsNullOrWhiteSpace(certPath) && string.IsNullOrWhiteSpace(keyPath))
-            return false;
+            return null;
         if (string.IsNullOrWhiteSpace(certPath) || string.IsNullOrWhiteSpace(keyPath))
             throw new InvalidOperationException(
                 $"{SectionName}:CertPath and {SectionName}:KeyPath must be set together.");
 
-        var tlsPort = section.GetValue<int?>("Port") ?? DefaultPort;
         var reloadInterval = TimeSpan.FromSeconds(section.GetValue<double?>("ReloadIntervalSeconds") ?? 300);
-        // Loads the pair now, so a missing or broken file fails the start.
-        var certificate = new ReloadingCertificate(certPath.Trim(), keyPath.Trim(), reloadInterval, TimeProvider.System);
-        builder.Services.AddSingleton(certificate);
-        var httpPorts = ParseHttpPorts(builder.Configuration["HTTP_PORTS"]);
-
-        // One explicit Listen() replaces the ASPNETCORE_HTTP_PORTS endpoints entirely, so the
-        // plain port(s) are listed again here, otherwise they would disappear.
-        builder.WebHost.ConfigureKestrel(kestrel =>
-        {
-            foreach (var port in httpPorts)
-                kestrel.ListenAnyIP(port);
-            kestrel.ListenAnyIP(tlsPort, listen => listen.UseHttps(CreateHttpsOptions(certificate)));
-        });
-        return true;
+        return new ReloadingCertificate(certPath.Trim(), keyPath.Trim(), reloadInterval, TimeProvider.System);
     }
 
     public static HttpsConnectionAdapterOptions CreateHttpsOptions(ReloadingCertificate certificate)
@@ -67,17 +62,6 @@ public static class ServerTls
             // once per reload interval.
             ServerCertificateSelector = (_, _) => certificate.Current,
         };
-    }
-
-    /// <summary>ASPNETCORE_HTTP_PORTS ("8080", "8080;8081"); 8080 when unset (the Dockerfile's
-    /// value).</summary>
-    public static IReadOnlyList<int> ParseHttpPorts(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return [8080];
-        return value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(p => int.Parse(p, System.Globalization.CultureInfo.InvariantCulture))
-            .ToArray();
     }
 }
 

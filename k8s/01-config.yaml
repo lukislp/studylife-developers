@@ -22,3 +22,16 @@ data:
   # the default "data" (config.py-equivalent default) would otherwise land in the container's
   # ephemeral filesystem root and be lost on every restart.
   DataDir: "/app/data"
+  # Host header pinning (audit 2026-11-16, finding M6): every other Host gets a 400, which is
+  # what defeats DNS rebinding. The two gateway host names (k8s/06-httproute.yaml), the Service
+  # DNS name StudyAtrium calls /internal/* with (its StudyLifeDevelopers__BaseUrl, the
+  # certificate SAN in 07-tls-certificate.yaml) and localhost, which the kubelet probes send
+  # explicitly (k8s/03-app.yaml). Ports are not part of the match.
+  AllowedHosts: "studylife-developers.heim.lan;studylife-developers.lukas2311-homelab.com;studylife-developers.studylife-developers.svc.cluster.local;localhost"
+  # Sign-in through the paired StudyAtrium instance (src/StudyLifeDevelopers/Auth). PublicUrl
+  # is the canonical portal origin: the sign-in callback {PublicUrl}/auth/callback is registered
+  # there, and a sign-in started on studylife-developers.heim.lan is moved to this host first.
+  # StudyLifePublicUrl is the browser-facing StudyAtrium UI (its consent page), not the
+  # cluster-internal StudyLife__BaseUrl above.
+  PortalAuth__PublicUrl: "https://studylife-developers.lukas2311-homelab.com"
+  PortalAuth__StudyLifePublicUrl: "https://studylife.lukas2311-homelab.com"

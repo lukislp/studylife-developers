@@ -1,22 +1,22 @@
-using System.Text.Json.Serialization;
+using StudyLifeDevelopers.Auth;
 using StudyLifeDevelopers.Components;
+using StudyLifeDevelopers.Hosting;
+using StudyLifeDevelopers.Internal;
+using StudyLifeDevelopers.Security;
 using StudyLifeDevelopers.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// HTTPS listener for the StudyLife -> studylife-developers hop (ServerTls:CertPath/KeyPath, see
-// ServerTls and k8s/03-app.yaml). Plain HTTP only when neither is set.
-ServerTls.Configure(builder);
+// Public port(s) for the UI, a separate internal port for StudyAtrium's /internal/* calls
+// (HTTPS when ServerTls is configured), see ListenerLayout.
+PortalListeners.Configure(builder);
 
+// Host header pinned to AllowedHosts (default "localhost", never "*" outside Development).
+builder.Services.AddHostPinning(builder.Configuration, builder.Environment);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-
-builder.Services.AddSingleton<KeyStore>();
-builder.Services.AddHttpClient<StudyLifeApiClient>((sp, http) =>
-{
-    var baseUrl = sp.GetRequiredService<IConfiguration>()["StudyLife:BaseUrl"];
-    if (!string.IsNullOrEmpty(baseUrl)) http.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-})
-.ConfigurePrimaryHttpMessageHandler(sp => StudyLifeCaTrust.CreateHandler(sp.GetRequiredService<IConfiguration>()));
+builder.Services.AddStudyLifeClients();
+builder.Services.AddInternalApi(builder.Configuration);
+builder.Services.AddPortalSignIn(builder.Configuration);
 
 var app = builder.Build();
 
@@ -25,47 +25,22 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
 
+// Order matters: listener separation and the origin check run before anything else answers.
+// Host filtering (HostPinning) is applied by the framework ahead of all of these.
+app.UseMiddleware<ListenerSeparationMiddleware>();
+app.UseMiddleware<SameOriginRequestMiddleware>();
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
-app.MapStaticAssets();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-
-// Authenticated by StudyLifeDevelopers:SharedSecret - the studylife side of this pair (see
-// DeveloperProxyClient.RegisterKeyAsync/RevokeKeyAsync there) never impersonates a specific
-// user; this portal is single-tenant (one deployment paired to exactly one studylife instance),
-// so the received key is simply THE key, see KeyStore.
-var developerSharedSecret = app.Configuration["StudyLifeDevelopers:SharedSecret"];
-
-bool HasValidSharedSecret(HttpRequest request) =>
-    !string.IsNullOrEmpty(developerSharedSecret)
-    && request.Headers.TryGetValue("X-StudyLife-Shared-Secret", out var provided)
-    && provided == developerSharedSecret;
-
-app.MapPost("/internal/register-key", (RegisterKeyRequest body, HttpRequest request, KeyStore keyStore) =>
-{
-    if (!HasValidSharedSecret(request)) return Results.Unauthorized();
-    keyStore.SetKey(body.ApiKey);
-    return Results.Ok();
-});
-
-app.MapPost("/internal/revoke-key", (HttpRequest request, KeyStore keyStore) =>
-{
-    if (!HasValidSharedSecret(request)) return Results.Unauthorized();
-    keyStore.Clear();
-    return Results.Ok();
-});
-
+app.MapStaticAssets().AllowAnonymous();
+app.MapGet(ListenerSeparationMiddleware.HealthPath, () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+app.MapInternalApi();
+app.MapPortalSignIn();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
-
-/// <summary>Body of POST /internal/register-key - matches DeveloperProxyClient.RegisterKeyAsync's
-/// anonymous-object payload shape exactly (snake_case, plain camelCase-unaware JSON, not ASP.NET
-/// Core's own web-default naming policy). UserId is accepted for shape-compatibility but
-/// otherwise unused: this portal is single-tenant, there is only ever one key (see KeyStore).</summary>
-internal sealed record RegisterKeyRequest(
-    [property: JsonPropertyName("user_id")] int UserId,
-    [property: JsonPropertyName("api_key")] string ApiKey);
 
 /// <summary>Exposes the top-level-statement-generated Program class to
 /// Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory&lt;Program&gt; in the test project.</summary>

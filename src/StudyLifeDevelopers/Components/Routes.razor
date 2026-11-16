@@ -2,7 +2,14 @@
 
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="@typeof(MainLayout)" />
+        @* Pages carry [Authorize] (Pages/_Imports.razor). The endpoint itself is already behind
+           the deny-by-default fallback policy; this second check matters inside a live circuit,
+           where PortalAuthenticationStateProvider can end the session after the page loaded. *@
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                <RedirectToSignIn />
+            </NotAuthorized>
+        </AuthorizeRouteView>
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">

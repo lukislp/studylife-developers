@@ -1,6 +1,7 @@
 @page "/"
 @rendermode InteractiveServer
 @inject StudyLifeApiClient Api
+@inject Microsoft.Extensions.Options.IOptions<PortalAuthOptions> PortalAuth
 
 <div class="setup-page">
 
@@ -47,10 +48,19 @@
                             <div class="ss-desc" style="margin:4px 0 0;font-family:monospace;font-size:0.8rem">clientId: @client.ClientId</div>
                             <div class="ss-desc" style="margin:2px 0 0;font-size:0.8rem">Scopes: @string.Join(", ", client.RequestedScopes)</div>
                         </div>
-                        <div class="toggle-row" style="gap:0.5rem;flex-shrink:0">
-                            <a href="@($"/addons/{client.ClientId}/edit")" class="btn-secondary">Edit</a>
-                            <button type="button" class="btn-danger" @onclick="() => _confirmingDeleteClientId = client.ClientId">Delete</button>
-                        </div>
+                        @if (client.ClientId == PortalAuth.Value.ClientId)
+                        {
+                            @* The portal's own sign-in client (PortalClientRegistrar): managed
+                               automatically and restored on every sign-in, so no edit/delete. *@
+                            <div class="ss-desc" style="flex-shrink:0;font-size:0.8rem">Used to sign in to this portal - managed automatically</div>
+                        }
+                        else
+                        {
+                            <div class="toggle-row" style="gap:0.5rem;flex-shrink:0">
+                                <a href="@($"/addons/{client.ClientId}/edit")" class="btn-secondary">Edit</a>
+                                <button type="button" class="btn-danger" @onclick="() => _confirmingDeleteClientId = client.ClientId">Delete</button>
+                            </div>
+                        }
                     </div>
                 }
             }
