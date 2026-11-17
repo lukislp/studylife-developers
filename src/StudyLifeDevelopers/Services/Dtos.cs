@@ -33,3 +33,27 @@ public class UpdateDeveloperClientRequestDto
     public List<string> AllowedRedirectUris { get; set; } = new();
     public List<string> RequestedScopes { get; set; } = new();
 }
+
+/// <summary>Response of GET /api/auth/whoami (studylife's WhoamiResponseDto).</summary>
+public class WhoamiResponseDto
+{
+    public int UserId { get; set; }
+    public string Credential { get; set; } = "";
+}
+
+/// <summary>Body of POST /api/auth/assertion-exchange (studylife's
+/// GenericAssertionExchangeRequestDto).</summary>
+public class AssertionExchangeRequestDto
+{
+    public string ClientId { get; set; } = "";
+    public string Assertion { get; set; } = "";
+    public string? CodeVerifier { get; set; }
+}
+
+/// <summary>Response of POST /api/auth/assertion-exchange (studylife's
+/// GenericAssertionExchangeResponseDto).</summary>
+public class AssertionExchangeResponseDto
+{
+    public int UserId { get; set; }
+    public string ApiKey { get; set; } = "";
+}

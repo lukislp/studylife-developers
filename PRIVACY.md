@@ -13,12 +13,18 @@ store.
   `/api/developer/clients` endpoints, on your behalf, using the one key StudyAtrium issued it.
 - **A key from StudyAtrium itself**, only over `/internal/*` endpoints authenticated by one shared
   secret you configure on both sides.
+- **Your StudyAtrium user id** when you sign in, to check that you are the paired account. The
+  sign-in grants the portal no access to your study data.
 
 ## What this portal stores
 
 Locally, in a single file on disk, never shared with StudyAtrium or anyone else:
 
 - The one API key StudyAtrium issued this portal (see `/internal/register-key`).
+- The ASP.NET Core Data Protection key ring that encrypts the sign-in cookie.
+
+In your browser it sets one session cookie (your StudyAtrium user id and a fingerprint of the
+pairing, encrypted) and, during sign-in, a short-lived correlation cookie. No tracking cookies.
 
 ## What this portal sends
 

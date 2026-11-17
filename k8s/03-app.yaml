@@ -59,20 +59,23 @@ spec:
           envFrom:
             - configMapRef: {name: studylife-developers-config}
             - secretRef: {name: studylife-developers-secrets}
-          # HTTPS listener for the StudyLife -> studylife-developers hop (Services/ServerTls.cs)
-          # on 8443, with the cert-manager certificate from 07-tls-certificate.yaml. StudyLife
-          # calls this port and validates the certificate against its internal CA. Removing
-          # these two variables is the explicit opt-out back to plain HTTP only.
+          # Internal listener (Hosting/ListenerLayout.cs): /internal/* and /health only, HTTPS
+          # with the cert-manager certificate from 07-tls-certificate.yaml, on 8443. StudyLife
+          # calls this port and validates the certificate against its internal CA. /internal/*
+          # does not exist on 8080, the port the gateway routes to.
           env:
             - name: ServerTls__CertPath
               value: /etc/studylife-developers-tls/tls.crt
             - name: ServerTls__KeyPath
               value: /etc/studylife-developers-tls/tls.key
+            - name: InternalApi__Port
+              value: "8443"
           ports:
+            # Public: the portal UI behind sign-in (gateway route, 06-httproute.yaml) and the
+            # kubelet probes.
             - containerPort: 8080
-            # ServerTls:Port default: HTTPS for the same app. 8080 stays for the kubelet probes
-            # and the gateway route (06-httproute.yaml); StudyLife's backend only uses 8443 (its
-            # AddonTls:RequireHttps refuses http:// URLs).
+            # Internal: StudyLife's /internal/* calls only (its AddonTls:RequireHttps refuses
+            # http:// URLs, so it never used 8080 for them).
             - containerPort: 8443
           resources:
             requests: {cpu: 50m, memory: 96Mi}
@@ -90,14 +93,16 @@ spec:
           # restarts a container that was only busy. The readiness probe keeps its deliberately
           # short 2s period (see above) and therefore gets 3s rather than 5s, which is still
           # three times the default; liveness gets the full 5s plus 5 consecutive failures.
+          # Host: localhost - the portal pins the Host header (AllowedHosts in 01-config.yaml) and
+          # the kubelet would otherwise send the pod IP, which is refused with a 400.
           readinessProbe:
-            httpGet: {path: /health, port: 8080}
+            httpGet: {path: /health, port: 8080, httpHeaders: [{name: Host, value: localhost}]}
             initialDelaySeconds: 2
             periodSeconds: 2
             timeoutSeconds: 3
             failureThreshold: 3
           livenessProbe:
-            httpGet: {path: /health, port: 8080}
+            httpGet: {path: /health, port: 8080, httpHeaders: [{name: Host, value: localhost}]}
             initialDelaySeconds: 6
             periodSeconds: 10
             timeoutSeconds: 5
@@ -114,10 +119,9 @@ spec:
             # .NET creates its diagnostic IPC socket and debug pipes here on every start.
             - name: tmp
               mountPath: /tmp
-            # $HOME of the aspnet image's app user (1654) - ASP.NET Core keeps its
-            # DataProtection keyring under ~/.aspnet/DataProtection-Keys. It was already
-            # ephemeral (container layer, and this Deployment uses Recreate), so an emptyDir
-            # changes nothing functionally.
+            # $HOME of the aspnet image's app user (1654). The Data Protection key ring that
+            # encrypts the sign-in cookie lives on the data volume instead
+            # (/app/data/dataprotection-keys), so a rollout does not sign the operator out.
             - name: home
               mountPath: /home/app
       volumes:
@@ -143,11 +147,12 @@ spec:
   type: ClusterIP
   selector: {app: studylife-developers}
   ports:
+    # Public: portal UI (gateway route) - no /internal/* here.
     - name: http
       port: 8080
       targetPort: 8080
-    # HTTPS for the StudyLife -> studylife-developers hop (ServerTls, 07-tls-certificate.yaml).
-    # StudyLife's StudyLifeDevelopers__BaseUrl points here.
+    # Internal, HTTPS: StudyLife's /internal/* calls (ServerTls, 07-tls-certificate.yaml).
+    # StudyLife's StudyLifeDevelopers__BaseUrl points here. Never referenced by the HTTPRoute.
     - name: https
       port: 8443
       targetPort: 8443

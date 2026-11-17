@@ -24,5 +24,6 @@ ENV ASPNETCORE_HTTP_PORTS=8080
 RUN mkdir -p /app/data && chown -R app:app /app
 USER app
 COPY --from=build --chown=app:app /app .
-EXPOSE 8080
+# 8080: public UI. 8081: internal /internal/* API (plain HTTP; 8443 when ServerTls is set).
+EXPOSE 8080 8081
 ENTRYPOINT ["dotnet", "StudyLifeDevelopers.dll"]

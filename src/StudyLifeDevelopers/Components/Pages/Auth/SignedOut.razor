@@ -1,0 +1,15 @@
+@page "/auth/signed-out"
+@attribute [AllowAnonymous]
+
+<PageTitle>Signed out - StudyAtrium Developers</PageTitle>
+
+<div class="setup-page">
+    <div class="setup-section">
+        <div class="ss-label">Signed out</div>
+        <p class="ss-desc">
+            You are signed out of the developer portal. Your StudyAtrium session itself is not
+            affected.
+        </p>
+        <a href="@PortalSignInEndpoints.LoginPath" class="btn-secondary">Sign in again</a>
+    </div>
+</div>

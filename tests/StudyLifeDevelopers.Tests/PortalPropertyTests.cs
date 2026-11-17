@@ -3,10 +3,9 @@ using System.Net.Http.Json;
 using System.Text;
 using FsCheck;
 using FsCheck.Xunit;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 using StudyLifeDevelopers.Services;
+using StudyLifeDevelopers.Tests.Infrastructure;
 
 namespace StudyLifeDevelopers.Tests;
 
@@ -17,22 +16,13 @@ namespace StudyLifeDevelopers.Tests;
 /// </summary>
 public class PortalPropertyTests : IDisposable
 {
-    private const string SharedSecret = "test-shared-secret";
-    private readonly string _dataDir = Path.Combine(Path.GetTempPath(), "sld-props-" + Guid.NewGuid());
-    private readonly WebApplicationFactory<Program> _factory;
+    private const string SharedSecret = PortalFactory.SharedSecret;
+    private readonly PortalFactory _factory = new();
     private readonly HttpClient _client;
 
-    public PortalPropertyTests()
-    {
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.UseSetting("StudyLifeDevelopers:SharedSecret", SharedSecret);
-            builder.UseSetting("DataDir", _dataDir);
-        });
-        _client = _factory.CreateClient();
-    }
+    public PortalPropertyTests() => _client = _factory.CreateClient();
 
-    private KeyStore KeyStore => _factory.Services.GetRequiredService<KeyStore>();
+    private KeyStore KeyStore => _factory.KeyStore;
 
     [Property(MaxTest = 200)]
     public bool The_key_store_hands_back_exactly_the_key_that_was_stored(NonNull<string> apiKey)
@@ -62,6 +52,7 @@ public class PortalPropertyTests : IDisposable
             Content = JsonContent.Create(new { user_id = 1, api_key = "never-stored" }),
         };
         request.Headers.TryAddWithoutValidation("X-StudyLife-Shared-Secret", provided);
+        request.Headers.Add(PortalFactory.LocalPortHeader, PortalFactory.InternalPort.ToString(CultureInfo.InvariantCulture));
 
         var response = _client.SendAsync(request).GetAwaiter().GetResult();
 
@@ -75,7 +66,6 @@ public class PortalPropertyTests : IDisposable
     {
         _client.Dispose();
         _factory.Dispose();
-        if (Directory.Exists(_dataDir))
-            Directory.Delete(_dataDir, recursive: true);
+        GC.SuppressFinalize(this);
     }
 }

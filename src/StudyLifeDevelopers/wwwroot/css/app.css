@@ -11,3 +11,13 @@ textarea.input {
     font-family: inherit;
     resize: vertical;
 }
+
+/* Sign-out is a form POST (antiforgery), rendered as a sidebar entry. */
+.sidebar button.nav-item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+}

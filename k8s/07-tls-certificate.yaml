@@ -1,4 +1,4 @@
-# Server certificate for the HTTPS listener (src/StudyLifeDevelopers/Services/ServerTls.cs,
+# Server certificate for the HTTPS listener (src/StudyLifeDevelopers/Hosting/ServerTls.cs,
 # k8s/03-app.yaml port 8443) that StudyLife's backend calls. Issued by StudyLife's own cluster-internal CA
 # (ClusterIssuer studylife-internal-ca-issuer, studylife repo k8s/07b-cert-manager-issuers.yaml),
 # the CA StudyLife validates add-on certificates against (its AddonTls:CaCertificatePath, see

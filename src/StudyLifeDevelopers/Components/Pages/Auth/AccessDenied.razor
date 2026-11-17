@@ -1,0 +1,44 @@
+@page "/auth/denied"
+@attribute [AllowAnonymous]
+
+<PageTitle>Sign-in refused - StudyAtrium Developers</PageTitle>
+
+<div class="setup-page">
+    <div class="setup-section">
+        <div class="ss-label">@Heading</div>
+        <p class="ss-desc">@Message</p>
+        <a href="@PortalSignInEndpoints.LoginPath" class="btn-secondary">Try again</a>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "reason")]
+    public string? Reason { get; set; }
+
+    private string Heading => Reason switch
+    {
+        "wrong-account" => "Wrong StudyAtrium account",
+        "not-paired" => "Not connected",
+        _ => "Sign-in failed",
+    };
+
+    private string Message => Reason switch
+    {
+        "wrong-account" =>
+            "You signed in with a StudyAtrium account this portal is not paired with. Only the account " +
+            "that enabled the \"studylife-developers connection\" can use it. Sign out of StudyAtrium and " +
+            "sign in again with that account.",
+        "not-paired" =>
+            "This portal isn't paired with a StudyAtrium account yet. Open your StudyAtrium instance's Setup " +
+            "page and enable the \"studylife-developers connection\" card, then sign in here.",
+        "client-id-taken" =>
+            "The portal's sign-in client id is already registered by another StudyAtrium account. The operator " +
+            "has to set PortalAuth__ClientId to a different value.",
+        "unavailable" =>
+            "StudyAtrium could not be reached. Try again in a moment.",
+        "rejected" =>
+            "StudyAtrium did not confirm the sign-in (it may have expired). Start again.",
+        _ =>
+            "The sign-in request was incomplete or expired. Start again.",
+    };
+}

@@ -47,7 +47,9 @@ Requires the .NET 10 SDK.
 dotnet restore StudyLifeDevelopers.slnx
 dotnet user-secrets --project src/StudyLifeDevelopers set "StudyAtrium:BaseUrl" "https://studylife.example.com"
 dotnet user-secrets --project src/StudyLifeDevelopers set "StudyLifeDevelopers:SharedSecret" "<the same value your StudyAtrium instance has>"
-dotnet run --project src/StudyLifeDevelopers --urls http://localhost:5080
+dotnet user-secrets --project src/StudyLifeDevelopers set "PortalAuth:PublicUrl" "http://localhost:5080"
+dotnet user-secrets --project src/StudyLifeDevelopers set "PortalAuth:StudyLifePublicUrl" "https://studylife.example.com"
+ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_HTTP_PORTS=5080 dotnet run --project src/StudyLifeDevelopers
 ```
 
 The four commands CI runs, in order:

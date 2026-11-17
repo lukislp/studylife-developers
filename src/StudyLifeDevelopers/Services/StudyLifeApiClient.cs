@@ -29,6 +29,19 @@ public sealed class StudyLifeApiClient(HttpClient http, KeyStore keyStore)
         return request;
     }
 
+    /// <summary>The StudyAtrium account the registered key belongs to (GET /api/auth/whoami, part
+    /// of the developer key's scope) - the one account allowed to sign in to this portal. Null
+    /// when no key is registered or StudyAtrium does not accept it any more.</summary>
+    public async Task<int?> GetPairedUserIdAsync(CancellationToken ct = default)
+    {
+        if (!Connected) return null;
+        using var request = NewRequest(HttpMethod.Get, "api/auth/whoami");
+        using var response = await http.SendAsync(request, ct);
+        if (!response.IsSuccessStatusCode) return null;
+        var whoami = await response.Content.ReadFromJsonAsync<WhoamiResponseDto>(JsonOptions, ct);
+        return whoami is { UserId: > 0 } ? whoami.UserId : null;
+    }
+
     public async Task<List<DeveloperClientDto>> GetClientsAsync(CancellationToken ct = default)
     {
         using var request = NewRequest(HttpMethod.Get, "api/developer/clients");
