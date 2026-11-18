@@ -1,4 +1,4 @@
-# The public root certificate of StudyLife's own cluster-internal cert-manager CA
+# The public root certificate of StudyAtrium's own cluster-internal cert-manager CA
 # (studylife-internal-ca-issuer, secret cert-manager/studylife-internal-ca in the studylife
 # repo's k8s/07b-cert-manager-issuers.yaml) - NOT the private key, which never leaves that
 # secret. Public certificate data, safe to commit: knowing it only lets a client verify certs

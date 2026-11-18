@@ -8,7 +8,7 @@
 #
 # Deliberately NO BackendTLSPolicy, unlike studylife-web/uptime-kuma/grafana's HTTPRoutes: the
 # portal's public port (8080, ASPNETCORE_HTTP_PORTS) speaks plain HTTP. The backend is that
-# public port only: the internal port 8443 (/internal/*, StudyLife's shared-secret calls) is
+# public port only: the internal port 8443 (/internal/*, StudyAtrium's shared-secret calls) is
 # never referenced here, and /internal/* does not exist on 8080.
 #
 # Everything behind this route requires sign-in (audit 2026-11-16, finding M6, closed): the

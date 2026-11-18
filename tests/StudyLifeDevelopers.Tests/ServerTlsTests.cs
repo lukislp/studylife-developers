@@ -15,7 +15,7 @@ namespace StudyLifeDevelopers.Tests;
 
 /// <summary>
 /// ServerTls: real Kestrel listeners and real TLS handshakes against a throwaway private CA,
-/// validated the way StudyLife's PrivateCaCertificateValidator does it (custom root, host name
+/// validated the way StudyAtrium's PrivateCaCertificateValidator does it (custom root, host name
 /// checked). WebApplicationFactory's TestServer has no network stack, so these start Kestrel on
 /// OS-assigned ports instead.
 /// </summary>
