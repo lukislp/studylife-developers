@@ -17,7 +17,7 @@ public sealed class StudyLifeApiClient(HttpClient http, KeyStore keyStore)
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     /// <summary>False when no key has been registered yet (the operator hasn't enabled the
-    /// "studylife-developers" connection on their StudyLife Setup page) - callers show a
+    /// "studylife-developers" connection on their StudyAtrium Setup page) - callers show a
     /// "not connected" state instead of attempting any request.</summary>
     public bool Connected => keyStore.GetKey() is not null;
 

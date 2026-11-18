@@ -60,7 +60,7 @@ spec:
             - configMapRef: {name: studylife-developers-config}
             - secretRef: {name: studylife-developers-secrets}
           # Internal listener (Hosting/ListenerLayout.cs): /internal/* and /health only, HTTPS
-          # with the cert-manager certificate from 07-tls-certificate.yaml, on 8443. StudyLife
+          # with the cert-manager certificate from 07-tls-certificate.yaml, on 8443. StudyAtrium
           # calls this port and validates the certificate against its internal CA. /internal/*
           # does not exist on 8080, the port the gateway routes to.
           env:
@@ -74,7 +74,7 @@ spec:
             # Public: the portal UI behind sign-in (gateway route, 06-httproute.yaml) and the
             # kubelet probes.
             - containerPort: 8080
-            # Internal: StudyLife's /internal/* calls only (its AddonTls:RequireHttps refuses
+            # Internal: StudyAtrium's /internal/* calls only (its AddonTls:RequireHttps refuses
             # http:// URLs, so it never used 8080 for them).
             - containerPort: 8443
           resources:
@@ -151,8 +151,8 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
-    # Internal, HTTPS: StudyLife's /internal/* calls (ServerTls, 07-tls-certificate.yaml).
-    # StudyLife's StudyLifeDevelopers__BaseUrl points here. Never referenced by the HTTPRoute.
+    # Internal, HTTPS: StudyAtrium's /internal/* calls (ServerTls, 07-tls-certificate.yaml).
+    # StudyAtrium's StudyLifeDevelopers__BaseUrl points here. Never referenced by the HTTPRoute.
     - name: https
       port: 8443
       targetPort: 8443

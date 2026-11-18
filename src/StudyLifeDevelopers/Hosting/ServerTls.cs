@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Server.Kestrel.Https;
 namespace StudyLifeDevelopers.Hosting;
 
 /// <summary>
-/// HTTPS listener for the StudyLife -> studylife-developers hop. StudyLife's
+/// HTTPS listener for the StudyAtrium -> studylife-developers hop. StudyAtrium's
 /// DeveloperProxyClient sends the shared secret (X-StudyLife-Shared-Secret) and the user's API
 /// key with /internal/register-key, so the hop has to be encrypted (OpenSSF
-/// crypto_used_network, StudyLife's docs/SECURITY-ASSURANCE.md section 8.3). StudyLife validates
+/// crypto_used_network, StudyAtrium's docs/SECURITY-ASSURANCE.md section 8.3). StudyAtrium validates
 /// the certificate against its own internal CA, host name included (its AddonTls:* settings),
 /// so the certificate is the cert-manager one from k8s/07-tls-certificate.yaml.
 ///
