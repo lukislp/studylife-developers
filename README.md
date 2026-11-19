@@ -269,6 +269,15 @@ Warnings are errors repo-wide (`Directory.Build.props`), and every project carri
 set, a csproj that disagrees with its lock file fails the restore instead of silently updating
 it. A plain `dotnet restore` refreshes the lock files locally after a package change.
 
+### Fonts
+
+The portal uses DM Sans and DM Mono, vendored as woff2 files in
+`src/StudyLifeDevelopers/wwwroot/fonts` and declared with `@font-face` in `wwwroot/css/base.css`.
+They are served by the portal itself, so a page view makes no request to Google Fonts or any other
+third party. The SIL Open Font License 1.1 notice sits next to the files (`fonts/OFL.txt`).
+`SelfHostedFontsTests` fails if a stylesheet or page references an external host again, or if a
+declared font is not served as `font/woff2`.
+
 ## Releases and images
 
 Versions are cut by the [lktec-bot](https://github.com/lukislp/lktec-bot) App's release module from
