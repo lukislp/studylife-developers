@@ -32,11 +32,24 @@ pairing, encrypted) and, during sign-in, a short-lived correlation cookie. No tr
   requested scopes) to your paired StudyAtrium instance's `/api/developer/clients` endpoints -
   nowhere else.
 
+## Fonts and other resources
+
+The portal's fonts (DM Sans and DM Mono, SIL Open Font License 1.1) are served by the portal
+itself from `wwwroot/fonts`. Your browser does not contact Google or any other font host, CDN or
+third party when it loads a page. Earlier versions loaded the fonts from Google Fonts, which sent
+your IP address to Google; that is no longer the case.
+
 ## What this portal never does
 
 - Never collects analytics, telemetry, or crash reports.
-- Never contacts any server other than the StudyAtrium instance it's paired to.
+- Never contacts any server other than the StudyAtrium instance it's paired to. Your browser
+  likewise loads every page resource (styles, fonts, scripts, icons) from the portal only.
 - Never hosts, runs, or has access to any add-on's actual code - only its registration metadata.
+
+## Controller and publisher
+
+Controller: the operator of your instance. Publisher: see the imprint at
+<https://lktec.org/impressum>.
 
 ## Source
 
